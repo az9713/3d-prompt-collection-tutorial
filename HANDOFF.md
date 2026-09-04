@@ -5,51 +5,41 @@ This file is the live "what to do next". There is no repo-level `CLAUDE.md` here
 
 Last updated: 2026-09-04.
 
-## Current state (as of local HEAD `63add03`)
+## Current state (as of local HEAD `f8fd6b5`)
 
-The repo is a clone of `https://github.com/petergpt/3d-prompt-collection`. It arrived
-with two files, `prompts.json` (63 prompts, 297,893 bytes) and `README.md`. Neither
-has been modified.
+The prompts came from `https://github.com/petergpt/3d-prompt-collection`. `prompts.json`
+(63 prompts, 297,893 bytes) is unmodified upstream content and should stay that way.
 
-One new file was added and finished this session:
+Two things exist here that do not exist upstream:
 
-- **`prompt-templates.html`** — 83,060 bytes, complete. A meta-pattern analysis of the
-  63 prompts, rewritten as plain-English prose, with six fill-in templates and six
-  worked examples. Dark mode, single file, no external dependencies. It links back to
-  the source repo, to `prompts.json` and to the raw file; all three URLs returned 200
-  when checked.
-  - `ed5909b` — first version, bullet-heavy.
-  - `794b60a` — rewritten as prose. Explanatory bullets became paragraphs; data tables,
-    the 22-step procedure and the 14-item checklist stayed as lists, per Simon's choice.
-  - `63add03` — source links added.
+- **`prompt-templates.html`** - 84,203 bytes, complete. The meta-pattern analysis of the 63
+  prompts: eight-part spine, six families, five paste-unchanged blocks, a word bank, a
+  22-step procedure, a 14-item checklist, six worked examples. Dark mode, single file, no
+  dependencies. Commits `ed5909b` (first version), `794b60a` (prose rewrite), `63add03`
+  (source links).
+- **`README.md`** - rewritten at `f8fd6b5`. It was Peter's 307 KB index with all 63 prompts
+  inline, which hid this repo's contribution. It is now a 6.7 KB front page for the
+  analysis. The old index was deleted, not moved; `prompts.json` and Peter's README carry
+  the prompts.
 
-Working tree is clean apart from `.ignore/cc1_3d_prompts.txt`, which is known untracked
-noise and should stay untracked.
+Published and pushed. Remote `tutorial` = `az9713/3d-prompt-collection-tutorial`, public.
+`origin` still points at `petergpt/3d-prompt-collection` and is never pushed to. Local
+`main` tracks `tutorial/main`. GitHub Pages serves the repo root, so the deliverable
+renders at
+`https://az9713.github.io/3d-prompt-collection-tutorial/prompt-templates.html` (verified
+200, 83,060 bytes).
+
+`.gitignore` keeps `.ignore/cc*_3d_prompts.txt` untracked. Those are raw Git Bash session
+dumps and must not be committed.
 
 ## Next task
 
-**Decide whether to push, and where.** This is the only open item. Nothing else is
-outstanding.
+None outstanding. Two loose ends if anyone wants them:
 
-Local `main` is 3 commits ahead of `origin/main`. `origin` is
-`petergpt/3d-prompt-collection`, which is somebody else's repository — the git identity
-here is `az9713`, not `petergpt`. So a push would be writing to a third party's public
-repo, and push rights have never been tested. Do not push without Simon saying so.
-
-Three options, in the order they are likely to be wanted:
-
-1. **Fork and push to Simon's own remote.** Keeps the work public and attributable
-   without touching someone else's repo.
-2. **Push to `origin` as-is.** Only if Simon confirms he has write access there.
-3. **Leave it local.** The HTML works fully from disk; its outbound links resolve
-   regardless of whether the page itself is ever published.
-
-Verify any push actually landed:
-
-```
-git rev-parse --short HEAD
-git ls-remote origin main | head -1     # must match
-```
+1. `.ignore/prompt-templates.html` is a tracked older copy of the root file. It is
+   duplicate weight and nothing links to it. Delete it if Simon agrees.
+2. The README quotes counts taken from the HTML. If the HTML's numbers ever change,
+   the README must change with it. Re-scan `prompts.json`; never quote from memory.
 
 ## Open question already put to Simon, still unanswered
 
