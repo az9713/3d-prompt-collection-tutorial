@@ -5,7 +5,7 @@ This file is the live "what to do next". There is no repo-level `CLAUDE.md` here
 
 Last updated: 2026-09-04.
 
-## Current state (as of local HEAD `da3220c`)
+## Current state (as of local HEAD `9e5c5e4`)
 
 `prompts.json` (63 prompts, 297,893 bytes) is unmodified upstream content from
 `https://github.com/petergpt/3d-prompt-collection` and must stay that way.
