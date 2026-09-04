@@ -3980,7 +3980,7 @@ document.querySelectorAll('.codewrap').forEach(function(w){
     if(panel) show(panel.dataset.panel, false);
     if(sub) showSub(sub.dataset.subpanel);
     if(el.tagName === 'DETAILS') el.open = true;
-    setTimeout(function(){ el.scrollIntoView({block:'start'}); }, 0);
+    setTimeout(function(){ el.scrollIntoView({block:'start', behavior:'instant'}); }, 0);
     return true;
   }
   window.addEventListener('hashchange', function(){ reveal(location.hash); });

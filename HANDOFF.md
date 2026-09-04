@@ -5,41 +5,59 @@ This file is the live "what to do next". There is no repo-level `CLAUDE.md` here
 
 Last updated: 2026-09-04.
 
-## Current state (as of local HEAD `f8fd6b5`)
+## Current state (as of local HEAD `da3220c`)
 
-The prompts came from `https://github.com/petergpt/3d-prompt-collection`. `prompts.json`
-(63 prompts, 297,893 bytes) is unmodified upstream content and should stay that way.
+`prompts.json` (63 prompts, 297,893 bytes) is unmodified upstream content from
+`https://github.com/petergpt/3d-prompt-collection` and must stay that way.
 
-Two things exist here that do not exist upstream:
+Three files exist here that do not exist upstream:
 
-- **`prompt-templates.html`** - 84,203 bytes, complete. The meta-pattern analysis of the 63
-  prompts: eight-part spine, six families, five paste-unchanged blocks, a word bank, a
-  22-step procedure, a 14-item checklist, six worked examples. Dark mode, single file, no
-  dependencies. Commits `ed5909b` (first version), `794b60a` (prose rewrite), `63add03`
-  (source links).
-- **`README.md`** - rewritten at `f8fd6b5`. It was Peter's 307 KB index with all 63 prompts
-  inline, which hid this repo's contribution. It is now a 6.7 KB front page for the
-  analysis. The old index was deleted, not moved; `prompts.json` and Peter's README carry
-  the prompts.
+- **`prompt-templates.html`** - about 472 KB. The meta-pattern analysis, now in six tabs:
+  the pattern, the 63 deltas, the six families (sub-tabs A-F), blocks and word bank, write
+  one, the source. Single file, no dependencies, dark mode. Deep links work: any anchor
+  activates the tab and sub-tab holding it, opens the `<details>` if it is one, and jumps
+  there instantly.
+- **`build_deltas.py`** - regenerates the delta tab between the `<!-- DELTAS:BEGIN -->` and
+  `<!-- DELTAS:END -->` markers. Idempotent. Run `python build_deltas.py` from the repo
+  root after any change to `prompts.json`.
+- **`README.md`** - a 9 KB front page for the analysis. It was Peter's 307 KB index with
+  all 63 prompts inline, which hid this repo's contribution; the index was deleted, not
+  moved.
 
-Published and pushed. Remote `tutorial` = `az9713/3d-prompt-collection-tutorial`, public.
-`origin` still points at `petergpt/3d-prompt-collection` and is never pushed to. Local
-`main` tracks `tutorial/main`. GitHub Pages serves the repo root, so the deliverable
-renders at
-`https://az9713.github.io/3d-prompt-collection-tutorial/prompt-templates.html` (verified
-200, 83,060 bytes).
+Published. Remote `tutorial` = `az9713/3d-prompt-collection-tutorial`, public, and local
+`main` tracks `tutorial/main`. `origin` still points at `petergpt/3d-prompt-collection`
+and is never pushed to. GitHub Pages serves the repo root:
+`https://az9713.github.io/3d-prompt-collection-tutorial/prompt-templates.html`.
 
 `.gitignore` keeps `.ignore/cc*_3d_prompts.txt` untracked. Those are raw Git Bash session
 dumps and must not be committed.
 
+## Numbers the generator produces, and how they were checked
+
+`build_deltas.py` measures everything from `prompts.json`. Its output agrees with the
+figures the document already carried, which is the check that it is segmenting correctly:
+import-map standard 14, strict-code 8 (7 verbatim plus prompt 6, which reworded it as spec
+bullets and is labelled *reworded*), ambition bar 7, no-front-end 37, closing line 16.
+If a future edit makes any of those disagree, the segmenter broke - not the document.
+
+Families come out A 27, B 5, C 14, D 4, E 6, F 7. The document names 42; the other 21 are
+family A by one rule (five or more markdown headers and 5,900+ chars) and are marked
+*by rule*. That rule never contradicts a doc-named family.
+
+Spine parts present, out of 63: a 63, b 31, c 47, d 55, e 53, f 61, g 63, h 59. This is a
+keyword rule and is the document's own inference, labelled as such in the delta tab. Do
+not restate it as if it were the source's labelling.
+
 ## Next task
 
-None outstanding. Two loose ends if anyone wants them:
+None outstanding. Loose ends if anyone wants them:
 
-1. `.ignore/prompt-templates.html` is a tracked older copy of the root file. It is
-   duplicate weight and nothing links to it. Delete it if Simon agrees.
-2. The README quotes counts taken from the HTML. If the HTML's numbers ever change,
-   the README must change with it. Re-scan `prompts.json`; never quote from memory.
+1. `.ignore/prompt-templates.html` is a tracked older copy of the root file. Duplicate
+   weight, nothing links to it. Delete it if Simon agrees.
+2. A hand-written one-line "what makes this one different" per prompt, on top of the
+   mechanical delta header. Offered and not taken; 63 lines of editorial.
+3. The page is 472 KB because all 63 prompt texts are embedded. That was deliberate: it
+   keeps the file working from disk with no dependency on Peter's repo.
 
 ## Open question already put to Simon, still unanswered
 

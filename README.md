@@ -10,11 +10,12 @@ The answer is one document.
 
 **Read it here: <https://az9713.github.io/3d-prompt-collection-tutorial/prompt-templates.html>**
 
-It is a single self-contained HTML file. It names the parts every prompt is built from,
-sorts the 63 into six families by length and packaging, extracts five text blocks you can
-paste unchanged, and ends with a 22-step procedure and a 14-item pre-flight checklist for
-writing a 64th prompt of your own. Six worked examples, written for this document and not
-present in the source collection, show each family filled in.
+It is a single self-contained HTML file in six tabs. The first shows the pattern every
+prompt is built from. The second takes all 63 apart and shows what each one adds on top of
+it. The rest sort the 63 into six families by length and packaging, extract five text
+blocks you can paste unchanged, and end with a 22-step procedure and a 14-item pre-flight
+checklist for writing a 64th prompt of your own. Six worked examples, written for this
+document and not present in the source collection, show each family filled in.
 
 ## What the analysis found
 
@@ -46,6 +47,27 @@ prompts name the sacrifice order explicitly. Prompt 1 puts it this way: the qual
 degrades far-window variation, traffic density and reflections *before ever degrading*
 island completeness or landmark silhouettes. If you copy one sentence out of the whole
 analysis, copy that one.
+
+## The 63 deltas
+
+The pattern is what all 63 share. The delta is what one prompt adds on top of it. The
+second tab shows both for every prompt, and every figure in it is measured from
+`prompts.json` by `build_deltas.py` rather than typed by hand.
+
+Each prompt gets a strip of eight cells showing which spine parts it actually contains and
+which it does without, the reusable blocks it carries, and its full text with any wording
+that also appears in another prompt dimmed out. A 63-row matrix summarises all of it at
+once.
+
+Two things fall out of that. Parts **a** and **g** are in all 63 - every prompt names its
+subject and tells the viewer what the controls do - while the negative list, part **b**, is
+in only 31 and is the one genuinely optional part. And verbatim reuse is smaller than it
+looks: a median prompt shares 9% of its characters with another. What repeats across the
+collection is the shape, not the sentences.
+
+Family sizes come out A 27, B 5, C 14, D 4, E 6, F 7. The document itself names a family
+for 42 prompts; the other 21 all turn out to be family A by rule - markdown section headers
+and 5,900 characters or more - and are marked *by rule* wherever they appear.
 
 ## The shared spine
 
@@ -106,8 +128,9 @@ and 33 that demand it.
 
 | File | What it is |
 |---|---|
-| `prompt-templates.html` | The analysis. Eight sections, six families, six worked examples, the procedure and the checklist. Single file, no dependencies, dark mode. |
+| `prompt-templates.html` | The analysis. Six tabs: the pattern, the 63 deltas, the six families, blocks and word bank, the procedure and checklist, the source. Single file, no dependencies, dark mode. |
 | `prompts.json` | The 63 source prompts, unmodified, as they arrived from the original repository. |
+| `build_deltas.py` | Regenerates the delta tab from `prompts.json`. Run `python build_deltas.py` after any change to the source prompts. |
 
 ## Source
 
