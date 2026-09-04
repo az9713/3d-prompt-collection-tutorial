@@ -2,6 +2,8 @@
 
 A presentation-order collection of prompts. Each entry includes only the prompt title and the prompt text. Prompts are collapsed so the page stays browsable on GitHub; expand any title to copy the prompt.
 
+The prompts in this collection come from the original repository: https://github.com/petergpt/3d-prompt-collection
+
 ## Sections
 
 | Section | Prompts | Count |
