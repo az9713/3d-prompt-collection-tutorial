@@ -56,14 +56,20 @@ second tab shows both for every prompt, and every figure in it is measured from
 
 Each prompt gets a strip of eight cells showing which spine parts it actually contains and
 which it does without, the reusable blocks it carries, and its full text with any wording
-that also appears in another prompt dimmed out. A 63-row matrix summarises all of it at
-once.
+that also appears in another prompt dimmed out. The text is annotated: every block carries
+a letter from a to h in the left margin naming the part it serves, so you can read the
+pattern down the page against the wording that fills it. A hollow letter means the block
+inherited its part from the header above rather than matching on its own wording. Nothing
+is reordered - the text runs exactly as it does in `prompts.json`. A 63-row matrix
+summarises all of it at once.
 
 Two things fall out of that. Parts **a** and **g** are in all 63 - every prompt names its
 subject and tells the viewer what the controls do - while the negative list, part **b**, is
-in only 31 and is the one genuinely optional part. And verbatim reuse is smaller than it
-looks: a median prompt shares 9% of its characters with another. What repeats across the
-collection is the shape, not the sentences.
+in only 31 and is the one genuinely optional part. That 31 is larger than the 26 quoted
+earlier because 26 counts the formal four-item list; the other five forbid a shortcut in
+passing rather than in a list. And verbatim reuse is smaller than it looks: a median prompt
+shares 9% of its characters with another. What repeats across the collection is the shape,
+not the sentences.
 
 Family sizes come out A 27, B 5, C 14, D 4, E 6, F 7. The document itself names a family
 for 42 prompts; the other 21 all turn out to be family A by rule - markdown section headers

@@ -342,7 +342,11 @@ def build():
            '; and parts present ' + role_line + ', out of 63. Parts <strong>a</strong> and '
            '<strong>g</strong> are in every single prompt: every one names its subject and '
            'tells the viewer what the controls do. Part <strong>b</strong>, the negative '
-           'list, is the one genuinely optional part.</p>',
+           'list, is the one genuinely optional part. Its count of 31 is larger than the 26 given on '
+           'the pattern tab because that figure counts the formal four-item list, '
+           '&ldquo;this must not be A, B, C or D&rdquo;, while the rule here also catches '
+           'prompts 6, 10, 12, 17 and 58, which forbid a shortcut in passing rather than '
+           'in a list.</p>',
            OUTRO_HEAD]
     for n, p in enumerate(PROMPTS, 1):
         out.append(card(n, p))

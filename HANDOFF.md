@@ -5,7 +5,7 @@ This file is the live "what to do next". There is no repo-level `CLAUDE.md` here
 
 Last updated: 2026-09-04.
 
-## Current state (as of local HEAD `193b07f`)
+## Current state (as of the latest commit on main; run `git log -1 --oneline`)
 
 `prompts.json` (63 prompts, 297,893 bytes) is unmodified upstream content from
 `https://github.com/petergpt/3d-prompt-collection` and must stay that way.
@@ -61,6 +61,11 @@ Two assertions run at build time and must keep passing:
 
 1. Every prompt reconstructs byte-for-byte from its annotated blocks. The annotation
    never reorders or edits the source text.
+Two counts for part b coexist on purpose. The pattern tab says 26, counting the formal
+"must not be A, B, C or D" list. The delta tab says 31, because its rule also catches
+prompts 6, 10, 12, 17 and 58, which forbid a shortcut in passing. Both tabs now say so.
+Do not "fix" either number to match the other.
+
 2. The set of parts in the gutter equals the set in the eight-cell strip, for all 63.
    A part can be present in a prompt yet lose every segment to a higher-priority part;
    a second pass reassigns it, and where even that would erase the part already there,
