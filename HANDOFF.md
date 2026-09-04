@@ -5,21 +5,22 @@ This file is the live "what to do next". There is no repo-level `CLAUDE.md` here
 
 Last updated: 2026-09-04.
 
-## Current state (as of local HEAD `9e5c5e4`)
+## Current state (as of local HEAD `193b07f`)
 
 `prompts.json` (63 prompts, 297,893 bytes) is unmodified upstream content from
 `https://github.com/petergpt/3d-prompt-collection` and must stay that way.
 
 Three files exist here that do not exist upstream:
 
-- **`prompt-templates.html`** - about 472 KB. The meta-pattern analysis, now in six tabs:
+- **`prompt-templates.html`** - about 637 KB. The meta-pattern analysis, now in six tabs:
   the pattern, the 63 deltas, the six families (sub-tabs A-F), blocks and word bank, write
   one, the source. Single file, no dependencies, dark mode. Deep links work: any anchor
   activates the tab and sub-tab holding it, opens the `<details>` if it is one, and jumps
   there instantly.
 - **`build_deltas.py`** - regenerates the delta tab between the `<!-- DELTAS:BEGIN -->` and
   `<!-- DELTAS:END -->` markers. Idempotent. Run `python build_deltas.py` from the repo
-  root after any change to `prompts.json`.
+  root after any change to `prompts.json`. Its CSS lives in the page's `<style>` block,
+  outside the markers, so the two must be edited together.
 - **`README.md`** - a 9 KB front page for the analysis. It was Peter's 307 KB index with
   all 63 prompts inline, which hid this repo's contribution; the index was deleted, not
   moved.
@@ -47,6 +48,26 @@ family A by one rule (five or more markdown headers and 5,900+ chars) and are ma
 Spine parts present, out of 63: a 63, b 31, c 47, d 55, e 53, f 61, g 63, h 59. This is a
 keyword rule and is the document's own inference, labelled as such in the delta tab. Do
 not restate it as if it were the source's labelling.
+
+## How the annotation works, and its two guarantees
+
+Every block of prompt text in the delta tab carries a letter saying which of the eight
+parts it serves. A block takes the first part its own wording matches, in the priority
+order d, b, h, e, g, c, f, so one block shows one letter. A block matching nothing
+inherits the part above it and is drawn hollow. Counts: 935 direct, 433 inherited,
+2 second letters.
+
+Two assertions run at build time and must keep passing:
+
+1. Every prompt reconstructs byte-for-byte from its annotated blocks. The annotation
+   never reorders or edits the source text.
+2. The set of parts in the gutter equals the set in the eight-cell strip, for all 63.
+   A part can be present in a prompt yet lose every segment to a higher-priority part;
+   a second pass reassigns it, and where even that would erase the part already there,
+   the block carries a second smaller letter. That case occurs exactly twice.
+
+The eight-part reading is a keyword rule. It is this document's inference, labelled as
+such in the delta tab. Do not restate it as the source's own labelling.
 
 ## Next task
 
