@@ -77,6 +77,76 @@ def roles_of(text):
     return got
 
 
+# Which label wins when one segment matches several parts. The two most
+# unmistakable wordings come first; the loosest, f, comes last.
+PRIORITY = ['d', 'b', 'h', 'e', 'g', 'c', 'f']
+PAT = {k: p for k, _l, p in ROLES if p}
+ROLE_NAME = {k: l for k, l, _p in ROLES}
+
+
+def label_segments(text):
+    """Return [(chunk, role, inherited)], the chunks concatenating back to text.
+
+    The opening segment is part a by definition. After that a segment takes the
+    first part its own wording matches, in PRIORITY order. A segment matching
+    nothing inherits the part above it, which is what a bullet under a labelled
+    header is doing anyway; those are marked inherited so the two are told apart.
+    """
+    segs = segments(text)
+    labels = [None] * len(segs)             # role per segment, None = separator
+    first = True
+    for i, seg in enumerate(segs):
+        if not seg.strip():                 # separator: stays with the block above
+            continue
+        if first:
+            labels[i], first = 'a', False
+            continue
+        low = seg.lower()
+        labels[i] = next((k for k in PRIORITY if re.search(PAT[k], low)), None)
+
+    # A part can be present in the prompt yet never win a segment, because every
+    # sentence carrying it also carries a higher-priority part. Give it the one
+    # segment it matches, but only where that does not erase the part already
+    # there, so the gutter shows exactly the parts the strip shows.
+    for missing in [k for k in PRIORITY if k in roles_of(text)
+                    and k not in {l for l in labels if l}]:
+        counts = collections.Counter(l for l in labels if l)
+        for i, seg in enumerate(segs):
+            if labels[i] and counts[labels[i]] > 1 and re.search(PAT[missing], seg.lower()):
+                labels[i] = missing
+                break
+
+    # If a part is still unrepresented, its only evidence sits inside a block
+    # whose own part appears nowhere else. Both are true, so both are shown:
+    # that block carries a second letter.
+    extra = collections.defaultdict(list)
+    for missing in [k for k in PRIORITY if k in roles_of(text)
+                    and k not in {l for l in labels if l}]:
+        for i, seg in enumerate(segs):
+            if labels[i] and re.search(PAT[missing], seg.lower()):
+                extra[i].append(missing)
+                break
+
+    rows, cur, cur_role, cur_inh, cur_x = [], '', None, False, []
+    for i, (seg, lab) in enumerate(zip(segs, labels)):
+        if not seg.strip():
+            cur += seg
+            continue
+        inh = lab is None
+        role = cur_role if inh else lab
+        x = extra.get(i, [])
+        if role != cur_role or inh != cur_inh or x:
+            if cur:
+                rows.append((cur, cur_role, cur_inh, cur_x))
+            cur, cur_role, cur_inh, cur_x = seg, role, inh, x
+        else:
+            cur += seg
+    if cur:
+        rows.append((cur, cur_role, cur_inh, cur_x))
+    assert ''.join(r[0] for r in rows) == text
+    return rows
+
+
 # --- 3. families ------------------------------------------------------------
 # What the document itself names. Prompt 43 is named in prose, not in the table.
 DOC_FAMILY = {}
@@ -155,14 +225,24 @@ def card(n, p):
     miss = ('<span class="miss">does without %s</span>' % ', '.join(missing)) if missing \
         else '<span class="miss all">all eight parts present</span>'
 
-    body, shared = [], 0
-    for seg in segments(text):
-        if is_reused(seg):
-            shared += len(seg)
-            body.append('<span class="reused">%s</span>' % esc(seg))
-        else:
-            body.append(esc(seg))
+    shared = sum(len(s) for s in segments(text) if is_reused(s))
     pct = int(round(100.0 * shared / len(text)))
+
+    body = []
+    for chunk, role, inherited, extra_roles in label_segments(text):
+        marked = []
+        for seg in segments(chunk):
+            marked.append('<span class="reused">%s</span>' % esc(seg)
+                          if is_reused(seg) else esc(seg))
+        gut = ('<span class="g %s%s" title="%s%s">%s</span>'
+               % (role, ' inh' if inherited else '',
+                  esc(ROLE_NAME[role]),
+                  ', inherited from the block above' if inherited else '', role))
+        for x in extra_roles:
+            gut += ('<span class="g %s also" title="%s, also in this block">%s</span>'
+                    % (x, esc(ROLE_NAME[x]), x))
+        body.append('<div class="prow2"><span class="guts">%s</span><pre>%s</pre></div>'
+                    % (gut, ''.join(marked).strip('\n')))
 
     bhtml = ''.join(
         '<span class="blk%s">Block %s &middot; %s%s</span>'
@@ -177,7 +257,7 @@ def card(n, p):
             '<div class="dbody">\n'
             '<div class="strip">{cells}{miss}</div>\n'
             '<div class="blocks">{b}</div>\n'
-            '<pre class="ptext">{body}</pre>\n'
+            '<div class="ptext">{body}</div>\n'
             '</div></details>').format(
         n=n, t=esc(p['title']), c='{:,}'.format(len(text)), f=fam, fs=fam_src,
         pct=pct, cells=''.join(cells), miss=miss, b=bhtml, body=''.join(body))
@@ -224,13 +304,24 @@ document names one, and marked <em>by rule</em> where it does not.</p>
 OUTRO_HEAD = """
 <h3>Every prompt, opened up</h3>
 
-<p>Click a title to open it. The strip repeats the eight parts for that prompt. In the
-text below, dimmed wording appears in at least one other prompt as well; everything at
-full contrast is unique to this one.</p>
+<p>Click a title to open it. The strip repeats the eight parts for that prompt. The prompt
+itself is then annotated: a letter in the left margin says which part each block of text
+is doing, so you can read the pattern down the page against the wording that fills it.
+Within the text, dimmed wording appears in at least one other prompt as well; everything
+at full contrast is unique to this one.</p>
+
+<p>A block takes the first part its own wording matches. A block whose wording matches
+nothing, usually a bullet under a labelled header, inherits the part above it and its
+letter is drawn hollow to show that. Twice in the whole collection a single sentence is
+the only evidence for two different parts, and that block carries a second, smaller
+letter rather than hiding one of them. Nothing is reordered: the text runs exactly as it
+does in <code>prompts.json</code>, which is also why the letters do not always run
+straight from a to h.</p>
 
 <p class="legend"><span class="k reused-k"></span>reused in another prompt
 <span class="k unique-k"></span>this prompt only
-<span class="k fixed-k"></span>part d, the block pasted unchanged</p>
+<span class="k fixed-k"></span>part d, the block pasted unchanged
+<span class="k inh-k"></span>part inherited from the block above</p>
 """
 
 
