@@ -1,0 +1,1116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>3D Prompt Templates — Meta-Patterns of the 63-Prompt Collection</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --text2:#cbd5e1;
+    --muted:#94a3b8; --accent:#fb923c; --accent2:#2dd4bf;
+    --border:#334155; --border-soft:#1e293b;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth; scroll-padding-top:70px}
+  body{
+    margin:0; background:var(--bg); color:var(--text2);
+    font-family:var(--sans); font-size:16px; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px; margin:0 auto; padding:0 20px 100px}
+
+  /* ---- nav ---- */
+  nav{
+    position:sticky; top:0; z-index:50; background:rgba(15,23,42,.94);
+    backdrop-filter:blur(8px); border-bottom:1px solid var(--border-soft);
+  }
+  nav .inner{max-width:980px; margin:0 auto; padding:10px 20px; display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center}
+  nav a{color:var(--muted); text-decoration:none; font-size:13px; letter-spacing:.02em; white-space:nowrap}
+  nav a:hover{color:var(--accent2)}
+  nav .brand{color:var(--accent); font-weight:700; font-size:13px; margin-right:6px}
+
+  /* ---- headings ---- */
+  header.top{padding:56px 0 28px; border-bottom:1px solid var(--border-soft); margin-bottom:36px}
+  h1{color:#f1f5f9; font-size:2.05rem; line-height:1.2; margin:0 0 10px; letter-spacing:-.02em}
+  .sub{color:var(--muted); font-size:1rem; margin:0}
+  h2{
+    color:var(--accent); font-size:1.35rem; margin:52px 0 14px;
+    padding-bottom:8px; border-bottom:1px solid var(--border); letter-spacing:-.01em;
+  }
+  h3{color:var(--accent2); font-size:1.06rem; margin:30px 0 10px; letter-spacing:.01em}
+  h4{color:#f1f5f9; font-size:.95rem; margin:22px 0 8px; text-transform:uppercase; letter-spacing:.06em}
+  p{margin:0 0 14px}
+  strong{color:#f1f5f9}
+  em{color:var(--text); font-style:italic}
+  a{color:var(--accent2)}
+
+  /* ---- blocks ---- */
+  .card{background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px 22px; margin:20px 0}
+  .card.tight{padding:14px 18px}
+  .note{border-left:3px solid var(--accent2); background:#152535; padding:12px 16px; margin:18px 0; border-radius:0 8px 8px 0; color:var(--text2)}
+  .warn{border-left:3px solid var(--accent); background:#2a1e12; padding:12px 16px; margin:18px 0; border-radius:0 8px 8px 0}
+  .warn strong{color:var(--accent)}
+
+  ul,ol{margin:0 0 16px; padding-left:22px}
+  li{margin:0 0 7px}
+  ol.proc{counter-reset:step; list-style:none; padding-left:0}
+  ol.proc li{
+    counter-increment:step; position:relative; padding-left:44px; margin-bottom:9px;
+  }
+  ol.proc li::before{
+    content:counter(step); position:absolute; left:0; top:1px;
+    width:28px; height:22px; line-height:22px; text-align:center;
+    background:var(--border); color:var(--accent2); border-radius:5px;
+    font-family:var(--mono); font-size:12px; font-weight:700;
+  }
+
+  /* ---- tables ---- */
+  .tw{overflow-x:auto; margin:18px 0; border:1px solid var(--border); border-radius:10px}
+  table{border-collapse:collapse; width:100%; font-size:.9rem; min-width:520px}
+  th{background:#172033; color:var(--accent2); text-align:left; padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border); white-space:nowrap}
+  td{padding:9px 14px; border-bottom:1px solid var(--border-soft); vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.num,th.num{text-align:right; font-family:var(--mono); color:var(--accent)}
+
+  /* ---- code ---- */
+  .codewrap{position:relative; margin:16px 0}
+  pre{
+    background:#0b1220; border:1px solid var(--border); border-radius:10px;
+    padding:18px 20px; overflow-x:auto; margin:0;
+    font-family:var(--mono); font-size:12.5px; line-height:1.62; color:#cbd5e1;
+    white-space:pre; tab-size:2;
+  }
+  pre.wrapped{white-space:pre-wrap}
+  code{font-family:var(--mono); font-size:.88em; background:#0b1220; border:1px solid var(--border-soft); padding:1px 5px; border-radius:4px; color:var(--accent2)}
+  pre code{background:none; border:none; padding:0}
+  .slot{color:var(--accent); font-weight:600}
+  .fixed{color:#7dd3fc}
+  .copy{
+    position:absolute; top:9px; right:9px; z-index:2;
+    background:var(--border); color:var(--muted); border:1px solid #475569;
+    border-radius:6px; font-size:11px; font-family:var(--mono);
+    padding:3px 9px; cursor:pointer; opacity:.55; transition:opacity .15s,color .15s;
+  }
+  .codewrap:hover .copy{opacity:1}
+  .copy:hover{color:var(--accent2); border-color:var(--accent2)}
+  .copy.ok{color:var(--accent2); border-color:var(--accent2); opacity:1}
+
+  .label{
+    display:inline-block; font-family:var(--mono); font-size:11px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--bg); background:var(--accent2);
+    padding:2px 8px; border-radius:4px; margin-bottom:8px; font-weight:700;
+  }
+  .label.b{background:var(--accent)}
+  .label.c{background:#64748b; color:#f1f5f9}
+  .fam-head{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-top:44px}
+  .fam-meta{color:var(--muted); font-size:.83rem; font-family:var(--mono)}
+  hr{border:none; border-top:1px solid var(--border-soft); margin:44px 0}
+  footer{color:var(--muted); font-size:.85rem; margin-top:60px; padding-top:20px; border-top:1px solid var(--border-soft)}
+  @media (max-width:640px){
+    h1{font-size:1.6rem}
+    .wrap{padding:0 14px 70px}
+    nav .inner{padding:8px 14px}
+    pre{font-size:11.5px; padding:14px}
+  }
+</style>
+</head>
+<body>
+
+<nav><div class="inner">
+  <span class="brand">3D PROMPT TEMPLATES</span>
+  <a href="#evidence">Evidence</a>
+  <a href="#spine">The spine</a>
+  <a href="#families">Families</a>
+  <a href="#fa">A · Flagship</a>
+  <a href="#fb">B · Spec</a>
+  <a href="#fc">C · Single idea</a>
+  <a href="#fd">D · Arcade</a>
+  <a href="#fe">E · Ambition bar</a>
+  <a href="#ff">F · Landmark card</a>
+  <a href="#blocks">Blocks</a>
+  <a href="#bank">Word bank</a>
+  <a href="#procedure">Procedure</a>
+  <a href="#checklist">Checklist</a>
+</div></nav>
+
+<div class="wrap">
+
+<header class="top">
+  <h1>3D Prompt Templates</h1>
+  <p class="sub">The meta-patterns of <code>prompts.json</code> — 63 prompts — turned into six fill-in templates with worked examples.</p>
+</header>
+
+<h2 id="what">1. What the source file is</h2>
+
+<p><code>prompts.json</code> holds a dict with two keys: <code>title</code> and <code>prompts</code>. <code>prompts</code> is a list of 63 objects. Each object has exactly two fields: <code>title</code> and <code>prompt</code>. There is no metadata and no code.</p>
+
+<p>Prompt length: minimum 532 characters, median 3,309, maximum 12,527.</p>
+
+<div class="tw"><table>
+<thead><tr><th>README section</th><th>Prompts</th><th class="num">Count</th></tr></thead>
+<tbody>
+<tr><td>Big 3D Worlds</td><td>1–30</td><td class="num">30</td></tr>
+<tr><td>Playable and Game-Like Scenes</td><td>31–42</td><td class="num">12</td></tr>
+<tr><td>Living Art Worlds</td><td>43–49</td><td class="num">7</td></tr>
+<tr><td>Impossible Vantages</td><td>50–52</td><td class="num">3</td></tr>
+<tr><td>Natural Spectacles</td><td>53–59</td><td class="num">7</td></tr>
+<tr><td>Elemental and Cosmic Finale</td><td>60–63</td><td class="num">4</td></tr>
+</tbody></table></div>
+
+<h3>Who these prompts address</h3>
+
+<p>They are one-shot benchmark prompts for a coding model. Prompts 16 and 18 say it in plain words:</p>
+
+<div class="note">"The output should feel like a flagship benchmark scene for a frontier web agent."</div>
+
+<p>Each prompt asks for one self-contained web page. 62 of 63 name Three.js. 33 forbid external assets. 48 demand procedural generation. The model receives no images and no models. It must write everything as code.</p>
+
+<p>This single fact explains every pattern below. A grader looks at the first frame, moves the mouse, and judges. So each prompt blocks the shortcuts a model would otherwise take.</p>
+
+<h2 id="evidence">2. Evidence that a template exists</h2>
+
+<p>The collection is not 63 independent documents. Identical text repeats across prompts.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Repeated text</th><th class="num">Uses</th></tr></thead>
+<tbody>
+<tr><td>Import-map sentence, variant 1 ("Everything procedural; no external assets.")</td><td class="num">14</td></tr>
+<tr><td>Import-map sentence, variant 2 ("no external image assets or models")</td><td class="num">12</td></tr>
+<tr><td>Import-map sentence, variant 3 ("Never reuse identifiers in the same scope")<br><span style="color:var(--muted);font-size:.85em">prompts 6, 24, 25, 26, 35, 36, 37, 38</span></td><td class="num">8</td></tr>
+<tr><td>"Absolute ambition bar…" paragraph, identical to the character<br><span style="color:var(--muted);font-size:.85em">prompts 16, 18, 43, 60, 61, 62, 63</span></td><td class="num">7</td></tr>
+<tr><td>"Smooth on a modern laptop, devicePixelRatio clamped to 2. The outcome: …"</td><td class="num">15+</td></tr>
+</tbody></table></div>
+
+<h3>Signal counts across all 63 prompts</h3>
+
+<div class="tw"><table>
+<thead><tr><th>Signal</th><th class="num">Prompts</th><th>What it enforces</th></tr></thead>
+<tbody>
+<tr><td>Names Three.js</td><td class="num">62</td><td>One target runtime.</td></tr>
+<tr><td>"instanc…"</td><td class="num">58</td><td>Density without draw calls.</td></tr>
+<tr><td>Import-map instruction</td><td class="num">50</td><td>Module loading that will not fail.</td></tr>
+<tr><td>"procedural"</td><td class="num">48</td><td>No downloads. Code makes everything.</td></tr>
+<tr><td>devicePixelRatio clamp</td><td class="num">48</td><td>A retina display cannot kill the frame rate.</td></tr>
+<tr><td>"reset"</td><td class="num">45</td><td>The hero view is always one click away.</td></tr>
+<tr><td>Orbit / camera verb</td><td class="num">45</td><td>Exploration works at once.</td></tr>
+<tr><td>"Presets"</td><td class="num">44</td><td>The grader gets composed shots for free.</td></tr>
+<tr><td>Compact controls / collapsible UI</td><td class="num">42</td><td>UI must not eat the picture.</td></tr>
+<tr><td>"alive" or "living"</td><td class="num">39</td><td>Motion is mandatory.</td></tr>
+<tr><td>"LOD"</td><td class="num">39</td><td>Detail near, cheap far.</td></tr>
+<tr><td>No title screen / no menu</td><td class="num">37</td><td>The first frame is the score.</td></tr>
+<tr><td>"smooth on a modern laptop"</td><td class="num">37</td><td>One named hardware target.</td></tr>
+<tr><td>"first frame"</td><td class="num">34</td><td>Second zero is designed.</td></tr>
+<tr><td>"silhouette"</td><td class="num">34</td><td>Shape must read at distance.</td></tr>
+<tr><td>"no external assets/models/images"</td><td class="num">33</td><td>Self-contained output.</td></tr>
+<tr><td>Quality selector</td><td class="num">33</td><td>Degradation is designed, not accidental.</td></tr>
+<tr><td>"billion"</td><td class="num">27</td><td>The density target.</td></tr>
+<tr><td>"This must not be…"</td><td class="num">26</td><td>The anti-shortcut clause.</td></tr>
+<tr><td>"dynamic" / "dynamism"</td><td class="num">23</td><td>Motion in several systems.</td></tr>
+<tr><td>"Single idea:"</td><td class="num">18</td><td>One sentence names the whole scene.</td></tr>
+<tr><td>"maximum-ambition"</td><td class="num">17</td><td>The opening adjective.</td></tr>
+<tr><td>"photo mode"</td><td class="num">17</td><td>A clean screenshot for the grader.</td></tr>
+<tr><td>Named palette</td><td class="num">16</td><td>No muddy default colors.</td></tr>
+<tr><td>"merged" geometry</td><td class="num">14</td><td>Far tier as one mesh.</td></tr>
+<tr><td>"Absolute ambition bar"</td><td class="num">7</td><td>The reusable closing paragraph.</td></tr>
+<tr><td>Impostor / imposter</td><td class="num">5</td><td>Cheapest far tier.</td></tr>
+</tbody></table></div>
+
+<h2 id="spine">3. The shared spine</h2>
+
+<p>All six families use the same eight parts, in the same order. Only the length and the packaging change.</p>
+
+<div class="tw"><table>
+<thead><tr><th class="num">#</th><th>Part</th><th>Job</th></tr></thead>
+<tbody>
+<tr><td class="num">a</td><td><strong>Intent line</strong></td><td>Verb first. Names the subject, the scale, the light, and the moment.</td></tr>
+<tr><td class="num">b</td><td><strong>Negative list</strong></td><td>Four named shortcuts. "This must not be A, B, C or D."</td></tr>
+<tr><td class="num">c</td><td><strong>Goal plus means</strong></td><td>An impossible density, then the technique that pays for it.</td></tr>
+<tr><td class="num">d</td><td><strong>Technical boilerplate</strong></td><td>Import map. Procedural. No external assets.</td></tr>
+<tr><td class="num">e</td><td><strong>First frame</strong></td><td>What fills the screen at second zero. No menus.</td></tr>
+<tr><td class="num">f</td><td><strong>World and life</strong></td><td>Named landmarks. Four or five independent motion systems.</td></tr>
+<tr><td class="num">g</td><td><strong>Controls</strong></td><td>Presets. Three compact controls. Photo mode. Reset.</td></tr>
+<tr><td class="num">h</td><td><strong>Performance and outcome</strong></td><td>LOD tiers, degrade order, laptop target, one payoff sentence.</td></tr>
+</tbody></table></div>
+
+<h3>The writer's core trick: paired opposites</h3>
+
+<p>Every prompt states the wow <em>and</em> the discipline that pays for it, in the same breath.</p>
+
+<ul>
+<li>Density is paired with instancing.</li>
+<li>Detail is paired with LOD.</li>
+<li>Ambition is paired with a laptop frame rate.</li>
+<li>A control is paired with a visible consequence.</li>
+</ul>
+
+<p>That pairing stops the model from choosing between "pretty" and "runs". It must deliver both.</p>
+
+<h3>The degrade order</h3>
+
+<p>This is the sharpest device in the collection. It tells the grader what counts. Prompt 1:</p>
+
+<div class="note">"Quality selector degrades far window variation, traffic density and reflections <strong>before ever degrading</strong> island completeness or landmark silhouettes."</div>
+
+<p>Without this clause, a model cuts the graded feature first to reach the frame rate.</p>
+
+<h2 id="families">4. The six families</h2>
+
+<div class="tw"><table>
+<thead><tr><th>Family</th><th>Length</th><th>Shape</th><th>Example prompts</th></tr></thead>
+<tbody>
+<tr><td><strong>A · Flagship</strong></td><td>6,000–12,500</td><td>Full <code>####</code> headers, all seven body sections.</td><td>1, 5, 45, 50, 51</td></tr>
+<tr><td><strong>B · Spec</strong></td><td>1,200–4,900</td><td>OBJECTIVE / TECHNICAL SPECIFICATIONS. Hex palette.</td><td>2, 6, 17, 19, 27</td></tr>
+<tr><td><strong>C · Single idea</strong></td><td>2,600–3,500</td><td>A literal <code>Single idea:</code> line plus four short sections.</td><td>20–23, 28–30, 53–59</td></tr>
+<tr><td><strong>D · Arcade</strong></td><td>532–699</td><td>Five sentences. Pure fill-in.</td><td>31, 39, 40, 41</td></tr>
+<tr><td><strong>E · Ambition bar</strong></td><td>2,700–3,300</td><td>Four dense paragraphs, no headers.</td><td>16, 18, 60–63</td></tr>
+<tr><td><strong>F · Landmark card</strong></td><td>1,476–2,330</td><td>Terse topic headers. Strict-code block. Named FPS target.</td><td>24, 25, 26, 35–38</td></tr>
+</tbody></table></div>
+
+<p>Prompt 43 also carries the family E ambition-bar paragraph, inside an otherwise family A body. The paragraph is portable. Add it to any family to raise the floor.</p>
+
+<div class="warn"><strong>Choose by length, not by subject.</strong> Any subject fits any family. Manhattan appears as family A (prompt 1) and as family D material (prompt 31). Giza appears as family B (prompt 17), family E (prompt 16) and family D (prompt 40).</div>
+
+<h3>Length of the six worked examples below</h3>
+
+<p>The range column reports the observed length of that family in the source collection. It is a guide, not a limit.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Family</th><th>Worked example</th><th class="num">Chars</th><th>Corpus range</th><th>Fit</th></tr></thead>
+<tbody>
+<tr><td>A</td><td>Billion-Piece Angkor</td><td class="num">7,329</td><td>6,000–12,500</td><td>inside</td></tr>
+<tr><td>B</td><td>Machu Picchu spec</td><td class="num">5,899</td><td>1,200–4,900</td><td>999 over</td></tr>
+<tr><td>C</td><td>The Boil</td><td class="num">3,616</td><td>2,600–3,500</td><td>116 over</td></tr>
+<tr><td>D</td><td>Great Wall Toboggan Run</td><td class="num">684</td><td>532–699</td><td>inside</td></tr>
+<tr><td>E</td><td>Billion-Piece Aurora Night</td><td class="num">3,370</td><td>2,700–3,300</td><td>70 over</td></tr>
+<tr><td>F</td><td>Neuschwanstein</td><td class="num">2,655</td><td>1,476–2,330</td><td>325 over</td></tr>
+</tbody></table></div>
+
+<p>Four examples run over. A subject with more named parts costs more words. Trim the landmark list first, then the micro-detail run. Never trim the degrade order.</p>
+
+<hr>
+
+<!-- ===================== FAMILY A ===================== -->
+<div class="fam-head" id="fa">
+  <h2 style="margin:0; border:none; padding:0">A · Flagship</h2>
+  <span class="fam-meta">6,000–12,500 chars · 7 sections · prompts 1, 5, 45, 50, 51</span>
+</div>
+
+<p>The full form. Use it when the subject can carry a whole world and a continuous camera range. Every section earns its place; drop none of them.</p>
+
+<span class="label">Template</span>
+<div class="codewrap"><button class="copy">copy</button><pre>Create a [AMBITION ADJECTIVE] Three.js [environment|experience|scene|world] of
+[SUBJECT] at [TIME OF DAY / MOMENT]: [ONE SENTENCE naming 3-5 concrete visible
+things]. This must not be [SHORTCUT 1], [SHORTCUT 2], [SHORTCUT 3], or
+[SHORTCUT 4]. It is [THE ONE TRUE THING].
+
+The goal is the visual impression of a billion [UNIT OF THE SUBJECT]: [3-5 named
+detail classes, comma separated]. Achieve this through [NAMED TECHNIQUE 1],
+[NAMED TECHNIQUE 2] and [NAMED TECHNIQUE 3], not through [THE LAZY TECHNIQUE].
+
+If you use Three.js, add an import map before the module script mapping "three"
+and "three/addons/" to the same pinned version, and import only via those names.
+Everything procedural; no external assets.
+
+#### FIRST FRAME - [NAME OF THE OPENING IMAGE]
+- Open on [THE VANTAGE]: [what fills the frame, edge to edge, at second zero].
+- [Why it reads as real: named landmarks, correct proportions, recognizable
+  silhouettes at a glance].
+- [The frame edges: what fades into haze left, right and behind].
+- No menus, titles or reveals. [THE SUBJECT] is simply there, complete.
+
+#### [THE HERO MECHANIC] IS THE SPECTACLE
+- Design the entire experience around [THE ONE MOTION OR TRANSITION]: from
+  [FAR STATE], through [MID STATE], down to [NEAR STATE] where [THE SMALLEST
+  DETAIL] resolves.
+- At the closest tier, [THE NEAREST REGION] must genuinely reward inspection:
+  [5-8 named micro-details].
+- [The failure it must avoid: popping, seams, loading, tiles swapping.]
+
+#### [THE SUBJECT], HONESTLY BUILT
+- Respect the real macro-structure: [4-6 true proportions or shapes].
+- Landmark set with true silhouettes and placements: [6-10 named items].
+- Everything else is procedurally generated but honest: [the generation rules].
+- [ONE SUB-REGION] is a complete sub-world: [its own named contents].
+
+#### [THE SUBJECT] IS VISIBLY ALIVE AT EVERY SCALE
+- [Motion system 1 - the big slow one, e.g. water traffic].
+- [Motion system 2 - the fast dense one, e.g. street traffic].
+- [Motion system 3 - air, light and weather].
+- [Motion system 4 - detail-tier life visible only near the camera].
+
+#### LIGHT AND MATERIAL
+- [DEFAULT LIGHT STATE] as default: [shadow behaviour, two contrasting materials,
+  the one surface that glitters].
+- Materials must vary by [district | era | species]: [4-6 named material classes].
+- [The one material that must survive a full-screen close-up.]
+
+#### EXPLORATION AND CONTROLS
+- Orbit, pan and zoom active immediately with beautifully tuned inertia across
+  the whole range; one reset returns to the hero view.
+- Camera presets: [4-7 named compositions; semicolon separated].
+- Compact controls only: [CONTROL 1], [CONTROL 2], [CONTROL 3], and photo mode.
+- [SECOND LIGHT STATE] is a required showpiece: [what changes and why it stuns].
+
+#### PERFORMANCE AS A FIRST-CLASS FEATURE
+- This prompt lives or dies on LOD engineering: [FAR TIER TECHNIQUE] at far tier,
+  [MID TIER TECHNIQUE] at mid tier, [NEAR TIER TECHNIQUE] near the camera,
+  imposters for the far field.
+- [Motion systems] are instanced systems with LOD behavior of their own.
+- Quality selector degrades [CHEAP THING 1], [CHEAP THING 2] and [CHEAP THING 3]
+  before ever degrading [GRADED THING 1] or [GRADED THING 2].
+- Smooth on a modern laptop, devicePixelRatio clamped to 2.
+  The outcome: [ONE SENTENCE - THE EMOTIONAL PAYOFF].</pre></div>
+
+<span class="label c">Worked example</span>
+<h4>Billion-Piece Angkor — The Entire Temple City at Monsoon Dawn</h4>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">Create a maximum-ambition Three.js environment of the ENTIRE Angkor temple city at monsoon dawn, alive, from the West Baray to the Bayon: nine hundred square kilometres of moated sandstone temples, flooded rice terraces, causeway processions and steaming jungle canopy, rendered as one continuous explorable object with the sun breaking through storm cloud behind the five towers of Angkor Wat. This must not be a single temple on a lawn, a ruin-and-vines mood piece, a fog-hidden partial model, or a dark stylized montage. It is the whole city, restored and inhabited, in one unbroken piece.
+
+The goal is the visual impression of a billion individually considered pieces: hundreds of thousands of sandstone blocks with real courses and weathering, every bas-relief register on the outer gallery, a canopy of individually placed trees, the full moat and baray water system, causeways lined with naga balustrades and thousands of walking figures. Achieve this through brutal instancing discipline, procedural block and relief generation, merged temple shells and nested LOD, not through raw counts.
+
+If you use Three.js, add an import map before the module script mapping "three" and "three/addons/" to the same pinned version, and import only via those names. Everything procedural; no external assets.
+
+#### FIRST FRAME - THE WHOLE CITY IN ONE IMPOSSIBLE IMAGE
+- Open on the complete temple city from high above the west, the sun climbing behind the five lotus towers of Angkor Wat: the vast rectangular moat catching the sky as a perfect mirror of pink and steel, the west causeway running dead straight to the gate, the Bayon's face-towers rising out of mist to the north, the Baray sheets of water flat and silver on both flanks.
+- The city must read as dense and real: the temple silhouettes recognizable at a glance (Angkor Wat's five towers, the Bayon's crowded face-mountain, Ta Prohm swallowed in fig roots, Banteay Kdei, Phnom Bakheng on its hill), the grid of ancient roads etched by tree lines, the moats as hard geometry cut into soft jungle.
+- The frame is full edge to edge: the Kulen hills blue in the north, the Tonle Sap floodplain hazing away south, storm cloud breaking overhead with shafts landing on individual temples.
+- No menus, titles or reveals. Angkor is simply there, complete.
+
+#### THE DESCENT IS THE SPECTACLE
+- Design the entire experience around one continuous descent with no loading seams and no popping that breaks belief: from whole-city orbit, through temple-complex level where galleries and courtyards separate, down to causeway level where processions carry parasols and monks cross in file, and finally to relief level where individual carved figures on the gallery wall resolve with their weapons, headdresses and expressions.
+- At the closest tier, the nearest gallery must genuinely reward inspection: the Churning of the Sea of Milk relief readable figure by figure, lichen and water stain in the sandstone courses, chipped naga teeth, offering candles, worn thresholds, moss in the joints, rain beading and running down the stone.
+- Transitions between LOD tiers must be smoothly cross-faded or geo-morphed. The viewer should feel one coherent city, not tiles swapping.
+
+#### ANGKOR, HONESTLY BUILT
+- Respect the real macro-geography: Angkor Wat's west orientation and its exact moat proportion, the walled square of Angkor Thom with the Bayon at its dead centre, the five gates and their causeways of god-and-demon figures, the two Barays as enormous rectangles of water, Phnom Bakheng's isolated hill between them.
+- Landmark set with true silhouettes and placements: Angkor Wat and its full three-gallery ascent; the Bayon and its two hundred faces; the Terrace of the Elephants; Baphuon and its raised walkway; Ta Prohm under strangler figs; Banteay Srei small and pink to the northeast; Preah Khan; the Srah Srang bathing pond.
+- Everything else is procedurally generated but honest: laterite enclosure walls, corbelled galleries, false doors, lintel carving density falling off by importance, village stilt houses in the forest, rice terraces stepping down to the floodplain.
+- Angkor Thom is a complete sub-world: its interior road grid, ponds, terraces, minor shrines, tree cover and the walled horizon on all four sides.
+
+#### A CITY THAT IS VISIBLY ALIVE AT EVERY SCALE
+- Water: the moats and Barays holding a mirror at dawn, rain squalls dragging visible curtains across them, ripple rings from fish, boats poling along the Siem Reap river, water spilling from temple spouts.
+- Ground: processions along the causeways, monks in saffron files, market activity at the gates, oxcarts on the forest roads, workers on bamboo scaffolds repointing a gallery.
+- Air and light: monsoon cloud shadow sweeping across the whole city, sunshafts landing and moving, mist lifting out of the canopy as the sun climbs, bats and swifts spiralling off the towers, smoke from cooking fires.
+- Detail-tier life: candle flames in shrine niches, saffron cloth moving in wind, geckos on hot stone, rain running off every cornice and pooling in the courtyard flags.
+
+#### LIGHT AND MATERIAL
+- Monsoon dawn as default: low warm light raking the reliefs so every carved figure gains a shadow, wet sandstone reading darker and richer than dry, the moats as sheets of moving mirror, canopy foliage deep and saturated.
+- Materials must vary by structure and age: warm grey-gold sandstone on the temples, rust-red laterite on the enclosure walls, green-black lichen in shade, pink stone at Banteay Srei, silver-grey fig root over Ta Prohm, gold leaf on shrine ornament.
+- Sandstone carries believable variation: course lines, tool marks, water staining running down from every joint, no two blocks identical.
+
+#### EXPLORATION AND CONTROLS
+- Orbit, pan and zoom active immediately with beautifully tuned inertia across the whole descent range; one reset returns to the hero city view.
+- Camera presets: full-city dawn hero; the west causeway walk toward the five towers; Bayon face-tower orbit at eye level; Ta Prohm under the fig roots; Phnom Bakheng summit looking back over the whole plain; a gallery relief macro pass along the Churning of the Sea of Milk.
+- Compact controls only: weather (breaking dawn / heavy monsoon rain / clear blue afternoon), procession and activity density, and photo mode.
+- Heavy monsoon is a required showpiece: the whole city under moving rain curtains, every roof running, courtyards sheeted with water reflecting the towers upside down, thunder light flashing across the canopy.
+
+#### PERFORMANCE AS A FIRST-CLASS FEATURE
+- This prompt lives or dies on LOD engineering: merged temple shells at far tier, instanced gallery and tower archetypes with per-instance variation at mid tier, bespoke carved blocks and relief panels streaming in near the camera, imposters for the far side of the plain.
+- Processions, canopy foliage, rain and water surfaces are instanced systems with LOD behavior of their own.
+- Quality selector degrades relief carving depth on distant galleries, canopy tree count and rain particle density before ever degrading city completeness, moat geometry or temple silhouettes.
+- Smooth on a modern laptop, devicePixelRatio clamped to 2. The outcome: the largest religious structure on Earth, finally shown with the city that was built around it.</pre></div>
+
+<hr>
+
+<!-- ===================== FAMILY B ===================== -->
+<div class="fam-head" id="fb">
+  <h2 style="margin:0; border:none; padding:0">B · Spec</h2>
+  <span class="fam-meta">1,200–4,900 chars · engineering-document tone · prompts 2, 6, 17, 19, 27</span>
+</div>
+
+<p>The engineering specification. Use it when you want to name exact hex colors, exact algorithms, and exact guardrails. This family is the most machine-readable of the five. It reads like a work order, not like a description.</p>
+
+<p>Two devices belong to this family: the <strong>IMPLEMENTATION GUARDRAILS</strong> block, which names specific bugs to prevent, and the <strong>FINAL INSTRUCTION</strong> block.</p>
+
+<div class="warn"><strong>Accuracy note on hex.</strong> 16 prompts name a palette in words. Exactly one — prompt 17 — gives hex codes. The hex lines in the template below are therefore optional, not family-defining. Use them when you want a color locked. Otherwise name the color in words, as the other 15 do.</div>
+
+<span class="label b">Template</span>
+<div class="codewrap"><button class="copy">copy</button><pre>#### OBJECTIVE
+
+- Construct a "Hyper-Fidelity" [Voxel|Polygonal] Simulation of [SUBJECT] at
+  [PERIOD / MOMENT].
+- The scene must be awe-inspiring, featuring [HERO 1] in [ITS TRUE STATE],
+  [HERO 2], and [HERO 3].
+
+---
+
+#### VISUAL TARGET
+
+- This is not a "[WRONG GENRE]" simulator. This is [SUBJECT] in its prime.
+- The resolution must be high enough to distinguish [SMALLEST DETAIL 1] and
+  [SMALLEST DETAIL 2].
+- Daytime lighting must not feel flat or dull - maintain strong cinematic
+  contrast (especially on [HERO 1]) and keep [HERO 2] looking vibrant and
+  "alive" across all times of day.
+
+---
+
+#### USER CONTROLS
+
+- **Camera:** [Cinematic Orbit with smooth damping | Free flight | First person].
+- **Lighting Control:** On-screen buttons for [STATE 1] / [STATE 2] / [STATE 3] /
+  [STATE 4] + a Cycle button. (Keyboard shortcuts optional fallback, not required.)
+- **Tour Mode:** On-screen button to toggle an auto-flyover following [THE ROUTE].
+- **Default lighting preset:** [STATE].
+
+---
+
+#### WORLD GENERATION LAYOUT ([West to East | Low to High])
+
+#### [ZONE 1 - Background]
+- **Topography:** [Rule. Use noise functions for height. NOT a flat plane.]
+- **Color:** [Named color family.]
+
+#### [ZONE 2 - Mid-Ground]
+
+#### [HERO STRUCTURE]
+- **Geometry:** [Scale + the algorithm that builds it.]
+- **Placement:** [Spacing rule. Non-overlapping footprints. Readable separation.]
+- **Material:** [Body material] + [the one emissive or specular accent].
+
+#### [SECOND HERO]
+- [Position rule relative to the first.]
+- High-detail modeling for [3 named sub-features].
+- [Optional surface treatment if possible.]
+
+#### [ZONE 3 - Foreground]
+- **[FEATURE]:** [Description.]
+- **[Water|Foliage] Effect:** [The shader or animation requirement, and the dull
+  result it must avoid.]
+- **[Human-scale feature]:** [What proves the scale.]
+
+---
+
+#### ARCHITECTURAL DETAILS (The "Impressive" Factors)
+
+- **[DETAIL CLASS 1]:** [What it is and where it goes.]
+- **[DETAIL CLASS 2]:** [What it is and where it goes.]
+- **Civilization:** [Small human-scale clusters that show scale.]
+
+---
+
+#### ATMOSPHERE &amp; LIGHTING
+
+- **The "[NAMED]" System:** [The dominant light force.]
+- **[STATE 1]:** [Light quality, shadow length, color shift.]
+- **[STATE 2]:** [Light quality, shadow length, color shift.] (this should be the default)
+- **Night:** [Artificial light sources, color, flicker behaviour.]
+- **Reflections:** If possible in the render budget, approximate [THE REFLECTION].
+
+---
+
+#### TECHNICAL SPECIFICATIONS
+
+- **Output:** Full implementation.
+- **Engine:** Three.js (inlined via Import Map) or raw WebGL2.
+- **Performance Strategy:**
+  - InstancedMesh is Mandatory: You must instance [TYPE 1], [TYPE 2], and
+    [TYPE 3]. Do not draw 100,000 individual meshes.
+  - Matrix Transformation: Use matrix manipulation to scale [HERO] without
+    killing memory.
+  - Occlusion: Do not render [THE HIDDEN INTERIOR].
+- **Color Palette:** Use a rich, saturated palette. Avoid "muddy" default colors.
+  - [Name]: Hex #XXXXXX ([property, e.g. High specular]).
+  - [Name]: Hex #XXXXXX ([property]).
+  - [Name]: Hex #XXXXXX ([property]).
+
+---
+
+#### IMPLEMENTATION GUARDRAILS
+
+- **No External Assets:** All textures/models must be code-generated.
+- **Solid Geology:** [The seam rule. No gaps in the world.]
+- **Planning:** [The specific placement bug to prevent.]
+- **UI:** Keep the on-screen HUD minimal and functional (no extra commentary text).
+
+---
+
+#### FINAL INSTRUCTION
+
+- Generate the full output.
+- Focus heavily on the contrast between [THING A] and [THING B].
+- Make the scale feel "[ADJECTIVE]."</pre></div>
+
+<span class="label c">Worked example</span>
+<h4>Hyper-Fidelity Voxel Simulation Spec — Machu Picchu (Inca Prime)</h4>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">#### OBJECTIVE
+
+- Construct a "Hyper-Fidelity" Voxel Simulation of Machu Picchu at the height of the Inca empire, around 1500.
+- The scene must be awe-inspiring, featuring the citadel in its inhabited state (thatched roofs intact, terraces planted and green), the Huayna Picchu peak rising behind it, and the Urubamba river gorge falling away on three sides.
+
+---
+
+#### VISUAL TARGET
+
+- This is not a "ruin" simulator. This is Machu Picchu in its prime, roofed and worked.
+- The resolution must be high enough to distinguish individual thatch bundles on a roof and the joint lines between the fitted stones of the Temple of the Sun.
+- Daytime lighting must not feel flat or dull - maintain strong cinematic contrast (especially on the terrace stairs) and keep the cloud forest looking vibrant and "alive" across all times of day.
+
+---
+
+#### USER CONTROLS
+
+- **Camera:** Cinematic Orbit with smooth damping, plus a walk mode along the terrace paths.
+- **Lighting Control:** On-screen buttons for Dawn Mist / High Noon / Golden Hour / Starry Night + a Cycle button. (Keyboard shortcuts optional fallback, not required.)
+- **Tour Mode:** On-screen button to toggle an auto-flyover following the Inca Trail in from the Sun Gate, down through the agricultural sector to the main plaza.
+- **Default lighting preset:** Dawn Mist.
+
+---
+
+#### WORLD GENERATION LAYOUT (Low to High)
+
+#### The Urubamba Gorge (Background and Base)
+
+- **Topography:** Near-vertical granite walls dropping 450 metres to a river. Use noise functions for rock face detail. NOT a flat plane and NOT a gentle hill.
+- **Color:** Wet grey-green granite, deepening to near-black in the shaded gorge.
+
+#### The Citadel (Mid-Ground)
+
+#### The Agricultural Terraces
+
+- **Geometry:** Hundreds of stepped retaining walls following the true contour of the ridge. Use a stepped-voxel algorithm at high density so the curves read as smooth from a distance.
+- **Placement:** Terrace runs must follow the slope continuously with no floating steps and no intersecting walls. Every terrace must connect to a staircase.
+- **Material:** Dry-laid grey fieldstone (walls) + saturated green planted crop surfaces (maize, potato, quinoa in distinct blocks).
+
+#### The Temple of the Sun and the Royal Sector
+
+- Must be positioned accurately above the cave tomb, at the top of the fountain stair.
+- High-detail voxel modeling for the curved wall, the trapezoidal windows, and the carved bedrock the temple sits on.
+- Polished fitted ashlar with visibly tighter joints than the surrounding rough masonry.
+
+#### The Residential Sector (Foreground)
+
+- **The Houses:** Dense clusters of single-room stone buildings with steep thatched gables.
+- **Thatch Effect:** Voxel thatch must use a layered warm-straw palette with wind animation and soft self-shadowing so it does not look dull or plastic.
+- **The Water Channel:** A carved stone channel running down through sixteen fountains, with visible flowing water in every one.
+
+---
+
+#### ARCHITECTURAL DETAILS (The "Impressive" Factors)
+
+- **Staircases:** Long carved-from-bedrock stairways linking every terrace level to the plazas, some cut from a single boulder.
+- **The Intihuatana:** The carved ritual stone on its raised platform, casting a real shadow that changes with the lighting state.
+- **Civilization:** Small clusters of llamas on the terraces, workers with carrying cloths on the stairs, and cooking smoke rising through the thatch to show scale.
+
+---
+
+#### ATMOSPHERE &amp; LIGHTING
+
+- **The "Inti" System:** The sun must be the dominant force, and it must break over the eastern ridge rather than appearing overhead.
+- **Dawn Mist:** Cloud forest vapour filling the gorge and pouring over the saddle, the citadel emerging island-like above it, gold light on the peaks only (this should be the default).
+- **High Noon:** Hard white light, short shadows, terrace walls reading as crisp horizontal bands, the granite almost glowing - avoid a flat look, use cinematic fill to keep form.
+- **Golden Hour:** Long shadows striping the terraces, the thatch turning orange, Huayna Picchu's face in deep blue shade.
+- **Night:** Dark blue sky with a dense Southern Hemisphere star field, hearth fires (orange point lights) flickering in the doorways.
+- **Reflections:** If possible in the render budget, approximate the wet sheen on granite after the mist passes.
+
+---
+
+#### TECHNICAL SPECIFICATIONS
+
+- **Output:** Full implementation.
+- **Engine:** Three.js (inlined via Import Map) or raw WebGL2.
+- **Performance Strategy:**
+  - InstancedMesh is Mandatory: You must instance the "Terrace Stone Voxel," the "Thatch Bundle Voxel," and the "Cloud Forest Tree Voxel." Do not draw 100,000 individual meshes.
+  - Matrix Transformation: Use matrix manipulation to scale the gorge walls without killing memory.
+  - Occlusion: Do not render the interiors of the residential houses unless the camera is inside one.
+- **Color Palette:** Use a rich, saturated palette. Avoid "muddy" default colors.
+  - Granite: Hex #8A9199 (Low specular, high detail).
+  - Thatch: Hex #C8A34A (Warm, soft, no shine).
+  - Terrace Crop: Hex #4E8B3C (Deep saturated green).
+  - Mist: Hex #E8EEF2 (High scatter, low density).
+
+---
+
+#### IMPLEMENTATION GUARDRAILS
+
+- **No External Assets:** All textures/models must be code-generated.
+- **Solid Geology:** The terraces must mesh seamlessly with the natural ridge. No gaps, no floating walls, no terrace hanging in air.
+- **Planning:** Ensure the citadel sits on the true saddle between two peaks; do not place it on a flat plateau. Flatten the terrain only where plazas are placed.
+- **UI:** Keep the on-screen HUD minimal and functional (no extra commentary text).
+
+---
+
+#### FINAL INSTRUCTION
+
+- Generate the full output.
+- Focus heavily on the contrast between the sheer green void of the gorge and the ordered, human, sunlit geometry of the terraces.
+- Make the scale feel "Vertiginous."</pre></div>
+
+<hr>
+
+<!-- ===================== FAMILY C ===================== -->
+<div class="fam-head" id="fc">
+  <h2 style="margin:0; border:none; padding:0">C · Single idea</h2>
+  <span class="fam-meta">2,600–3,500 chars · one sentence carries the scene · prompts 20–23, 28–30, 53–59</span>
+</div>
+
+<p>The most efficient family. One sentence defines the whole build. Everything after it supports that sentence.</p>
+
+<p>The <code>Single idea:</code> grammar is fixed. It is a noun phrase, an em dash, and one interaction:</p>
+
+<div class="tw"><table>
+<thead><tr><th class="num">#</th><th>Spectacle noun phrase</th><th>The one interaction</th></tr></thead>
+<tbody>
+<tr><td class="num">55</td><td>a forest wearing a million butterflies</td><td>and one button that wakes them</td></tr>
+<tr><td class="num">54</td><td>the patience and violence of ice</td><td>a living wall that breaks on your command</td></tr>
+<tr><td class="num">53</td><td>the sheer mass of falling water as a living monument</td><td>and a boat ride into its throat</td></tr>
+<tr><td class="num">57</td><td>swimming through a galaxy of gold</td><td>with the simplest possible glide</td></tr>
+<tr><td class="num">56</td><td>emergent unison — chaos of sparks resolving into waves</td><td>and a slider that lets the viewer dial the magic</td></tr>
+</tbody></table></div>
+
+<span class="label">Template</span>
+<div class="codewrap"><button class="copy">copy</button><pre>Create a [ADJECTIVE] Three.js scene of [SUBJECT] at [THE EXACT MOMENT]: [one
+sentence naming 3-5 visible things]. Open directly inside [THE PLACE] with
+[THE SPECTACLE] already [STATE] and [THE LIGHT] already [STATE]. Do not create
+a title screen, menu, loading state, or [THE EMPTY VERSION OF THIS SCENE].
+
+If you use Three.js, add an import map before the module script mapping "three"
+and "three/addons/" to the same pinned version, and import only via those names.
+Generate [LIST THE ELEMENTS] entirely procedurally; no external image assets or
+models.
+
+Single idea: [SPECTACLE NOUN PHRASE] - and [ONE INTERACTION].
+
+#### [THE STATIC WORLD]
+- Build [THE MASS] as dense instanced masses that read at three scales: from
+  afar, [WHAT IT LOOKS LIKE]; closer, [WHAT RESOLVES]; near, [THE INDIVIDUAL].
+- [The physical consequence that proves weight or mass.]
+- The [SETTING] itself is [SCALE ADJECTIVE]: [4-6 named features of the place].
+
+#### [THE EVENT]
+- One simple trigger - a [NAMED] button - starts the spectacle: [what spreads,
+  what lifts, what changes, in what order].
+- [THE MOTION QUALITY] - [name it], never [name what it must not be].
+- [How the world settles or resets afterwards if left alone.]
+
+#### [THE SIGNATURE MATERIAL]
+- The signature image is [THE ONE IMAGE EVERYBODY KNOWS]. Make [THE EFFECT] the
+  hero material effect.
+- Keep the palette luminous: [4 named colors]. Bright throughout; no gloom.
+
+#### SIMPLE EXPLORATION
+- Orbit, pan, zoom immediately, reset to [THE HERO VIEW]. Presets: [4-5 named
+  views].
+- Controls beyond [THE TRIGGER]: [SLIDER 1] and [SLIDER 2]. Nothing else.
+  Tiny HUD: [ONE NUMBER]. Compact collapsible UI.
+
+#### PERFORMANCE DISCIPLINE
+- Instanced [SUBJECT] with LOD ([full form near], [flicker sprites far]), clamped
+  devicePixelRatio of 2, particle budgets that scale via a quality selector which
+  thins [THE CHEAP THING] before touching [THE HERO THING].
+  Smooth on a modern laptop.</pre></div>
+
+<span class="label c">Worked example</span>
+<h4>The Boil — Sardine Run Under the Diving Gannets</h4>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">Create a breathtaking Three.js scene of the South African sardine run at the moment a baitball forms: a spinning silver sphere of a hundred thousand fish held together by dolphins in the blue, with gannets falling out of the sunlit surface like white arrows and a bronze whaler shark cutting the ball open from below. Open directly inside the open water with the baitball already spinning and the dive already in progress. Do not create a title screen, menu, loading state, or an empty blue ocean.
+
+If you use Three.js, add an import map before the module script mapping "three" and "three/addons/" to the same pinned version, and import only via those names. Generate fish, predators, water, light shafts, bubbles and animation entirely procedurally; no external image assets or models.
+
+Single idea: a hundred thousand fish behaving as one frightened animal - and a button that drops the gannets.
+
+#### THE BAITBALL
+- Build the sardines as dense instanced masses that read at three scales: from afar, a solid dark sphere turning slowly in the blue; closer, a shimmering skin of moving scales with flash ripples travelling across the surface; near, individual fish with silver flanks, dark backs and visible eyes, banking in unison.
+- The ball must visibly respond to pressure: dolphins circling below force it upward and tighten it, a shark pass punches a temporary hole that closes within seconds, and the whole mass flinches as one when a predator commits.
+- The water itself is vast and cathedral-like: sunlit surface ceiling above with moving caustic patterns, blue falling away to black below, drifting plankton motes catching the light, no visible floor and no visible walls.
+
+#### THE DIVE
+- One simple trigger - a Gannet Dive button - starts the spectacle: the surface above darkens with a gathering flock, then birds fall in a continuous stream, each punching a white bubble trail forty feet down, striking through the ball and turning to swim back up.
+- Flight underwater is fast and committed - piercing, never fluttering, never a slow drift. Bubble trails linger and rise. The ball detonates outward at each strike and re-forms within seconds.
+- If left alone the ball reassembles and rotates calmly, the dolphins resume patrol, and the surface goes quiet until the next trigger.
+
+#### LIGHT THROUGH WATER
+- The signature image is a sunbeam catching a hundred thousand scales at once. Make silver flash - the sudden bright flicker as a fish turns broadside to the sun - the hero material effect.
+- Keep the palette luminous: cobalt blue, silver-white, bronze shark flank, gannet white with a yellow head. Bright throughout; no gloom and no murk.
+
+#### SIMPLE EXPLORATION
+- Orbit, pan, zoom immediately, reset to the hero view alongside the ball looking up into the light. Presets: inside the ball looking out through the fish, under the ball looking up at the dive column, the dolphin patrol circle from the side, the surface from just below with birds entering, and a wide blue drift showing the whole event small in a huge ocean.
+- Controls beyond the dive button: predator pressure slider and a water-clarity slider (deep blue to green plankton bloom). Nothing else. Tiny HUD: fish remaining. Compact collapsible UI.
+
+#### PERFORMANCE DISCIPLINE
+- Instanced sardines with LOD (full fish geometry near, oriented flash sprites far), GPU flocking on a boids field, clamped devicePixelRatio of 2, bubble and particle budgets that scale via a quality selector which thins distant fish and old bubble trails before touching the ball surface, the dive column or the light shafts. Smooth on a modern laptop.</pre></div>
+
+<hr>
+
+<!-- ===================== FAMILY D ===================== -->
+<div class="fam-head" id="fd">
+  <h2 style="margin:0; border:none; padding:0">D · Arcade</h2>
+  <span class="fam-meta">532–699 chars · five sentences · prompts 31, 39, 40, 41</span>
+</div>
+
+<p>The tightest template in the collection. Four prompts share one skeleton. Fill in eight slots and you have a new prompt.</p>
+
+<p>Sentence 1 puts the player already in motion. Sentence 2 blocks every front-end screen. Sentence 3 states the goal and the scenery. Sentence 4 lists the required HUD. Sentence 5 gives four adjectives.</p>
+
+<span class="label">Template</span>
+<div class="codewrap"><button class="copy">copy</button><pre>[Create|Build] a bright Three.js [ACTIVITY] game [PREPOSITION] [SETTING].
+The player starts already [VERB-ing] toward the first [OBJECTIVE MARKER].
+
+Do not create a title screen, menu, level select, onboarding overlay, or
+press-start state.
+
+Single idea: [VERB] through [MARKER TYPE] to reach the [FINAL TARGET] before the
+timer ends. [ONE SENTENCE naming 5-8 concrete scenery items.]
+
+Include timer, [MARKER] count, reset, compact controls, and a
+[close third-person|chase] camera.
+
+Make it [ADJ], [ADJ], [ADJ], and [ADJ].</pre></div>
+
+<h4>How the four originals fill the same slots</h4>
+
+<div class="tw"><table>
+<thead><tr><th>Slot</th><th>31 · Rooftop</th><th>39 · Venice</th><th>40 · Giza</th><th>41 · Amazon</th></tr></thead>
+<tbody>
+<tr><td>Activity</td><td>rooftop parkour</td><td>speedboat</td><td>sandboarding</td><td>zipline</td></tr>
+<tr><td>Already doing</td><td>running</td><td>steering</td><td>sliding downhill</td><td>sliding along a cable</td></tr>
+<tr><td>Marker</td><td>rooftop checkpoints</td><td>bridge gates</td><td>downhill gates</td><td>leaf rings</td></tr>
+<tr><td>Final target</td><td>the final billboard</td><td>the finish dock</td><td>the oasis finish</td><td>the landing platform</td></tr>
+<tr><td>Camera</td><td>close third-person</td><td>chase</td><td>chase</td><td>chase</td></tr>
+<tr><td>Four adjectives</td><td>bright, kinetic, legible, playable immediately</td><td>—</td><td>golden, fast, sunny, clear</td><td>—</td></tr>
+</tbody></table></div>
+
+<span class="label c">Worked example</span>
+<h4>Great Wall Toboggan Run</h4>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">Build a bright Three.js toboggan game down a ridge-top slide beside the Great Wall of China. The player starts already accelerating toward the first painted arch gate.
+
+Do not create a title screen, menu, level select, onboarding overlay, or press-start state.
+
+Single idea: steer the sled through arch gates to reach the watchtower finish before the timer ends. Make the ridge feel vast and readable, with the stone wall snaking away over green mountains, crenellations, watchtowers, banner poles, pine slopes, mist in the valleys, and bright gate markers.
+
+Include timer, gate count, reset, compact controls, and a chase camera.
+
+Make it bright, fast, sweeping, and instantly clear.</pre></div>
+
+<div class="note">Character count of the example: 684. That sits inside the family range of 532–699.</div>
+
+<hr>
+
+<!-- ===================== FAMILY E ===================== -->
+<div class="fam-head" id="fe">
+  <h2 style="margin:0; border:none; padding:0">E · Ambition bar</h2>
+  <span class="fam-meta">2,700–3,300 chars · four dense paragraphs, no headers · prompts 16, 18, 60–63</span>
+</div>
+
+<p>The densest family. No headers. Four paragraphs, each with one job: the premise, the detail, the motion, and the reusable ambition bar.</p>
+
+<p>Paragraph 2 and paragraph 3 use long comma-separated runs on purpose. The run is a checklist in prose. It gives the model twenty concrete nouns to build and leaves no room for a vague answer.</p>
+
+<span class="label">Template</span>
+<div class="codewrap"><button class="copy">copy</button><pre>Create the [SUPERLATIVE] Three.js [SUBJECT] possible: [one sentence, the whole
+premise]. The opening frame must be [SIZE ADJECTIVE] but instantly
+understandable: [ONE RUN-ON SENTENCE listing 8-12 concrete things visible at
+once, comma separated]. This must not be [SHORTCUT 1], [SHORTCUT 2],
+[SHORTCUT 3] or [SHORTCUT 4]. It is [THE ONE TRUE THING].
+
+Push the billion-piece detail through scale cues: [ONE RUN-ON LIST of 12-20
+named micro-details, comma separated]. Use [TECHNIQUE 1], [TECHNIQUE 2],
+[TECHNIQUE 3], [TECHNIQUE 4] and [TECHNIQUE 5]. [THE ONE THING THAT MUST NEVER
+LOOK CHEAP] should remain [QUALITY], never [THE CHEAP VERSION].
+
+Make the [SUBJECT] visibly dynamic. [SYSTEM 1] should [motion], [SYSTEM 2]
+should [motion], [SYSTEM 3] should [motion], [SYSTEM 4] should [motion], and
+[SYSTEM 5] should [motion]. Controls: [6-8 controls, comma separated]. Camera
+modes: [5-6 named modes, comma separated]. The default must show [5-6 elements]
+in one spectacular frame.
+
+Absolute ambition bar: do not satisfy this prompt with a symbolic miniature, a
+sparse diorama, a single hero object, a mostly static scene, a flat shader demo
+or a clever but thin approximation. The output should feel like a flagship
+benchmark scene for a frontier web agent: immediate first-frame impact, visible
+motion in at least five independent systems, inspectable micro-detail at close
+range, strong silhouettes at wide range, meaningful camera modes, responsive
+controls with obvious visual consequences, and performance-conscious
+implementation using instancing, merged geometry, LOD, shader effects and
+GPU-friendly particles. Prioritize dynamic spectacle and concrete construction
+over explanatory UI. If a feature is mentioned, make it visible, moving or
+inspectable.</pre></div>
+
+<span class="label c">Worked example</span>
+<h4>Billion-Piece Aurora Night — The Sky Burns Over the Ice Fjord</h4>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">Create the most extreme real-time Three.js aurora spectacle possible: one Arctic fjord under a full geomagnetic storm, rendered at maximum scale and detail. The opening frame must be enormous but instantly understandable: a frozen fjord ringed by black serrated peaks, a fleet of stranded icebergs locked in sea ice, a green-and-magenta curtain filling the entire upper sky in vertical rays, the whole light show mirrored in a single open lead of black water, a small research hut with one warm window on the shore, snowmobile tracks running out onto the ice, steam rising off the lead, and the Milky Way still visible behind the curtain. This must not be a green smear on a starfield, a flat animated skybox, a dark empty tundra with one shader, or a photo-real still with a slow pan. It is a living storm of charged sky standing over a real place.
+
+Push the billion-piece detail through scale cues: individual aurora rays with visible ray structure and hard lower edges, ice-crack networks under snow, wind-carved sastrugi ridges, blue ice showing through scoured patches, iceberg fracture planes and internal glow, frost feathers on the hut window, breath vapour, snow spindrift lifting off the ridge lines, ski tracks, a wind sock, guy-wire ice, aerial masts, the ice-lead steam column, refrozen pressure ridges, star fields of correct density, satellite passes, and a distant headlamp moving on the ice. Use instanced snow and ice detail, volumetric ray-marched aurora curtains, merged terrain shells with LOD, screen-space mirror reflection on the lead, shader-driven frost accumulation and GPU spindrift particles. The aurora should remain volumetric and structurally sharp, never a soft green fog card.
+
+Make the sky visibly dynamic. The curtain should fold and travel across the whole sky, individual rays should pulse upward at storm speed, the corona should break open directly overhead in a sudden burst, the fjord reflection should track every change with a beat of delay, the spindrift should stream continuously off the ridges, and the hut window should flicker as someone moves inside. Controls: storm intensity, curtain altitude, color balance (green to blood red), wind, moon phase, star density, camera mode and time scrub. Camera modes: shoreline wide with the reflection, corona directly overhead looking up, iceberg-level drift across the ice, ridge summit looking down the whole fjord, hut doorway with the warm interior behind, and a slow high orbit of the entire basin. The default must show fjord, ice, peaks, curtain, reflection and hut in one spectacular frame.
+
+Absolute ambition bar: do not satisfy this prompt with a symbolic miniature, a sparse diorama, a single hero object, a mostly static scene, a flat shader demo or a clever but thin approximation. The output should feel like a flagship benchmark scene for a frontier web agent: immediate first-frame impact, visible motion in at least five independent systems, inspectable micro-detail at close range, strong silhouettes at wide range, meaningful camera modes, responsive controls with obvious visual consequences, and performance-conscious implementation using instancing, merged geometry, LOD, shader effects and GPU-friendly particles. Prioritize dynamic spectacle and concrete construction over explanatory UI. If a feature is mentioned, make it visible, moving or inspectable.</pre></div>
+
+<hr>
+
+<!-- ===================== FAMILY F ===================== -->
+<div class="fam-head" id="ff">
+  <h2 style="margin:0; border:none; padding:0">F · Landmark card</h2>
+  <span class="fam-meta">1,476–2,330 chars · terse topic headers · prompts 24, 25, 26, 35, 36, 37, 38</span>
+</div>
+
+<p>The quiet family. Seven prompts share it and nothing in the collection announces it. It covers one landmark or one toy set, not a world.</p>
+
+<p>Three markers identify it. It uses the strict-code import block, not the procedural one. It names an explicit frame-rate floor: <code>Target &gt;=55 FPS and clamp devicePixelRatio &lt;= 2</code>. And its headers are single nouns: SCENE, LANDMARKS, STYLE, CONTROLS, TECHNICAL.</p>
+
+<p>What it drops matters as much. There is <strong>no</strong> negative "must not be" clause, <strong>no</strong> billion-piece claim, and <strong>no</strong> degrade order. The scene is small enough that the model cannot cheat by shrinking it.</p>
+
+<div class="note">Prompt 6 uses the same strict-code block at 8,085 characters. It stays in family B. The block travels; the family does not.</div>
+
+<span class="label b">Template</span>
+<div class="codewrap"><button class="copy">copy</button><pre>Create [THE ICONIC SUBJECT] at [LOCATION] - [THE FRAMING OR PRESENTATION RULE].
+
+If you use Three.js, add an import map (before the module script) mapping "three"
+and "three/addons/" to the same pinned version, and import only via those names.
+Never reuse identifiers in the same scope - use descriptive variable names.
+
+#### [THE SUBJECT]
+
+[One line of framing.]
+- [Feature 1 - the defining shape]
+- [Feature 2 - the structure or levels]
+- [Feature 3 - the carved or built detail]
+- [Feature 4 - the characteristic color]
+- Scale: approximately [N]m [tall|wide|long]
+
+[The presentation rule: what the viewer must NOT have to do first.]
+
+#### [SURROUNDINGS | SCENE | TABLE SETUP]
+
+- [What frames the subject left and right]
+- [The ground surface]
+- [Optional human or animal figures for scale]
+- [What sits behind, and what sits above]
+
+#### [MOTION | TRAINS | THE CARAVAN]
+
+- [Moving element 1 and its animation]
+- [Moving element 2 and its animation]
+- [The ambient drift: dust, wind, water, light]
+
+#### [LIGHTING | STYLE]
+
+- [The light state and why this subject needs it]
+- [The one thing the light does to this material]
+- [Palette rule: what dominates, and what is banned]
+
+#### CONTROLS
+
+- Time of day slider ([state] -&gt; [state] -&gt; [state])
+- Camera: [default mode], [second mode], [third mode]
+- Camera presets: [3-4 named views]
+- UI compact and collapsible
+
+#### TECHNICAL
+
+- Focus detail budget on [THE ONE HERO SURFACE]
+- InstancedMesh for [repeat prop 1], [repeat prop 2], [repeat prop 3]
+- [Anything generated procedurally rather than modelled]
+- Target &gt;=55 FPS; clamp devicePixelRatio &lt;= 2</pre></div>
+
+<span class="label c">Worked example</span>
+<h4>Neuschwanstein — The Castle on Its Crag</h4>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">Create Neuschwanstein Castle above the Pöllat gorge in Bavaria - directly presented for exploration.
+
+If you use Three.js, add an import map (before the module script) mapping "three" and "three/addons/" to the same pinned version, and import only via those names. Never reuse identifiers in the same scope - use descriptive variable names.
+
+#### THE CASTLE
+
+The white limestone fairy-tale silhouette standing on its own rock spur:
+- The tall slender keep with its blue-capped spire, and the stepped gatehouse in red brick
+- Three levels of massing - gatehouse, lower bailey, and the towering Palas at the north end
+- Carved detail - pointed arch windows, oriels, corner turrets, crenellated walkways, the tiled roofs in dark blue-grey
+- The characteristic bone-white limestone facing against dark forest
+- Scale: approximately 65m from courtyard to spire tip
+
+Present the castle directly - no long forest approach road. The viewer starts on the Marienbrücke footbridge, facing the full south elevation across the gorge.
+
+#### SURROUNDINGS
+
+- The Pöllat gorge falling away below the bridge, with a waterfall visible in the cut
+- Dense fir forest carpeting the slopes on both sides, thinning to bare rock at the crag
+- The Alpsee and Schwansee lakes on the plain below, and the village of Hohenschwangau
+- The Tegelberg ridge rising sharply behind, snow on the high faces
+- A few walkers on the bridge for scale
+
+#### MOTION
+
+- Cloud shadow moving across the forest slopes and up the castle face
+- The waterfall running continuously in the gorge below, with mist lifting
+- Birds circling the keep, and flags turning on the towers
+- Forest canopy moving in wind, heavier on the exposed ridge
+
+#### LIGHTING
+
+- Clear morning light from the east, striking the south and east elevations
+- The castle is famous for how white stone reads against black-green forest - hold that contrast hard
+- Shadows from the turrets and oriels give the facade its depth; avoid a flat lit box
+
+#### CONTROLS
+
+- Time of day slider (morning -> midday -> golden hour -> blue dusk with the windows lit)
+- Camera: Free orbit around the crag, Bridge viewpoint, Courtyard walk, Close-up detail mode
+- Camera presets: the Marienbrücke hero shot, the gorge from below looking up, the north Palas against the Alps, an aerial circuit of the whole spur
+- UI compact and collapsible
+
+#### TECHNICAL
+
+- Focus detail budget on the south and east elevations of the castle
+- InstancedMesh for fir trees, roof tiles, window frames, crenellations and rock scree
+- Terrain, forest placement and the gorge cut generated procedurally; no external assets
+- Target >=55 FPS; clamp devicePixelRatio <= 2</pre></div>
+
+<hr>
+
+<!-- ===================== BLOCKS ===================== -->
+<h2 id="blocks">5. Reusable blocks — paste unchanged</h2>
+
+<p>These four blocks repeat across the collection. Do not rewrite them. Paste them.</p>
+
+<h3>Block 1 — Import map, standard (14 uses)</h3>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">If you use Three.js, add an import map before the module script mapping "three" and "three/addons/" to the same pinned version, and import only via those names. Everything procedural; no external assets.</pre></div>
+
+<h3>Block 2 — Import map, strict-code variant (8 uses: prompts 6, 24, 25, 26, 35, 36, 37, 38)</h3>
+<p>This variant belongs to family F, plus prompt 6. It replaces the "everything procedural" clause with a naming rule. Use it on short prompts where a scope collision is the likely failure.</p>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">If you use Three.js, add an import map (before the module script) mapping "three" and "three/addons/" to the same pinned version, and import only via those names. Never reuse identifiers in the same scope - use descriptive variable names.</pre></div>
+
+<h3>Block 3 — The ambition bar (7 uses: prompts 16, 18, 43, 60, 61, 62, 63)</h3>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">Absolute ambition bar: do not satisfy this prompt with a symbolic miniature, a sparse diorama, a single hero object, a mostly static scene, a flat shader demo or a clever but thin approximation. The output should feel like a flagship benchmark scene for a frontier web agent: immediate first-frame impact, visible motion in at least five independent systems, inspectable micro-detail at close range, strong silhouettes at wide range, meaningful camera modes, responsive controls with obvious visual consequences, and performance-conscious implementation using instancing, merged geometry, LOD, shader effects and GPU-friendly particles. Prioritize dynamic spectacle and concrete construction over explanatory UI. If a feature is mentioned, make it visible, moving or inspectable.</pre></div>
+
+<h3>Block 4 — The no-front-end clause (37 prompts carry a version)</h3>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">Do not create a title screen, menu, level select, onboarding overlay, or press-start state.</pre></div>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">No menus, titles or reveals. [THE SUBJECT] is simply there, complete.</pre></div>
+
+<h3>Block 5 — The closing line (15+ uses)</h3>
+<div class="codewrap"><button class="copy">copy</button><pre class="wrapped">Smooth on a modern laptop, devicePixelRatio clamped to 2. The outcome: [ONE SENTENCE - THE EMOTIONAL PAYOFF].</pre></div>
+
+<hr>
+
+<!-- ===================== WORD BANK ===================== -->
+<h2 id="bank">6. Slot word bank</h2>
+
+<p>All entries below appear in the source collection. Use them to fill slots quickly.</p>
+
+<h3>Ambition adjectives (the opening slot)</h3>
+<p>maximum-ambition (17) · unprecedented, museum-quality · monumental · staggering · breathtaking · the most ambitious … possible · the most astonishingly rich · the definitive · the ultimate high-detail · the most extreme real-time · the most visually luxurious · spectacular original · radiant · thunderous, complete · luminous · serene, sun-drenched · enchanted</p>
+
+<h3>Negative-list vocabulary (26 prompts)</h3>
+<p>Pick four that a lazy model would actually produce.</p>
+<div class="tw"><table>
+<thead><tr><th>Failure class</th><th>Phrases used in the collection</th></tr></thead>
+<tbody>
+<tr><td>Too small</td><td>a single district · a single pyramid · a single ice sculpture · a symbolic miniature · a tabletop diorama · a dollhouse with three rooms · a small pile of yellow discs</td></tr>
+<tr><td>Too sparse</td><td>a sparse diorama · a sparse waterfront · a postcard with three props · three breakable boxes on a plane · a sparse model on flat ground · an empty walkway</td></tr>
+<tr><td>Too flat</td><td>a skyline billboard · a textured skybox · a flat shader wobble · a flat picture with parallax layers · a flat map · a static painted backdrop · a flat golden floor</td></tr>
+<tr><td>Too static</td><td>a static statue viewer · a mostly static scene · a slideshow of static dioramas · a static architectural study · a static tableau · a museum of scattered models</td></tr>
+<tr><td>Too dark</td><td>a murky night render · a dark stylized montage · a dark apocalyptic scene · a dark cross-section · a dark smoky background · a dark tunnel</td></tr>
+<tr><td>Too generic</td><td>a generic skyline · a generic Middle-Eastern skyline · a generic stone shader · a generic sci-fi city · a generic volcano cone · a generic abstract shader · a low-poly slab city · a low-poly schematic</td></tr>
+<tr><td>Wrong genre</td><td>a particle screensaver · a particle demo · a physics tech demo on a gray plane · an abstract music-visualizer · a gray tech demo · an educational diagram · a UI-heavy engineering tool · a menu of effects · an arcade ring course</td></tr>
+</tbody></table></div>
+
+<h3>Control vocabulary (42 prompts)</h3>
+<p>Never exceed four controls. Photo mode is the fourth in 17 prompts.</p>
+<p>time of light / time of day · weather state · season · activity density · traffic density · crowd density · water clarity · caustic strength · tide depth · flow intensity · storm phase · swirl density · flight speed · time dilation · creature activity · quality selector · <strong>photo mode</strong></p>
+
+<h3>Preset vocabulary (44 prompts)</h3>
+<p>Write 4 to 7, separated by semicolons. Each names a composition, not a coordinate.</p>
+<p>the hero vista · a close orbit of the single hero object · eye level inside the crowd · the summit or rooftop panorama · the approach or arrival route · the macro inspection pass · the impossible vantage looking back at the start · an auto-tour toggle that flies the route hands-free</p>
+
+<h3>Performance vocabulary (58 / 39 / 33 prompts)</h3>
+<p>brutal instancing discipline · InstancedMesh is mandatory · merged district meshes at far tier · instanced archetypes with per-instance variation · bespoke detail streaming near the camera · imposters for the far tier · nested LOD · geo-morphed or cross-faded tier transitions · pooled lifetimes · GPU-friendly particles · flow fields · stateful instanced agents · waypoint state machines · clamp devicePixelRatio to 2 · no memory explosions · target ≥55 FPS</p>
+
+<hr>
+
+<!-- ===================== PROCEDURE ===================== -->
+<h2 id="procedure">7. Procedure — write a new prompt</h2>
+
+<ol class="proc">
+<li>Pick one subject and one exact moment. Name the light.</li>
+<li>Write the hook in one line. Example: "a forest wearing a million butterflies".</li>
+<li>Choose the family by target length. See the family table above.</li>
+<li>Write the intent sentence. Start with the verb "Create" or "Build".</li>
+<li>List four cheap answers a model would give. Use the negative-list word bank.</li>
+<li>Write the negative clause: "This must not be A, B, C, or D."</li>
+<li>State the impossible density. Name the unit: pieces, brushstrokes, wings, blocks.</li>
+<li>Name the technique that pays for it. Forbid the lazy alternative in the same sentence.</li>
+<li>Paste the import-map block. Choose the standard or the strict variant.</li>
+<li>Write FIRST FRAME. Describe only what fills the screen at second zero.</li>
+<li>Add the no-front-end clause. Use block 4.</li>
+<li>Name the hero mechanic in its own header. Name the failure it must avoid.</li>
+<li>List 6 to 10 real landmarks or features by name. Give true proportions.</li>
+<li>Write four or five independent motion systems. Give each its own bullet.</li>
+<li>State the default light state. Name 4 to 6 material classes.</li>
+<li>Write 4 to 7 camera presets. Separate them with semicolons.</li>
+<li>Write "Compact controls only:" then three controls and photo mode.</li>
+<li>Write the performance tiers: far, mid, near, imposter.</li>
+<li>Write the degrade order. Name what may drop and what may never drop.</li>
+<li>Close with "Smooth on a modern laptop, devicePixelRatio clamped to 2."</li>
+<li>Write the outcome sentence. Name the feeling, not the feature.</li>
+<li>Count the characters. Compare against the family range. Cut or expand.</li>
+</ol>
+
+<div class="warn"><strong>Warning:</strong> do not skip step 19. Without a degrade order, a model cuts the graded feature first to reach the frame rate.</div>
+
+<h3>The rule behind the rules</h3>
+
+<p>Every section answers one question: what will the model do wrong here, and how do I block it?</p>
+
+<div class="tw"><table>
+<thead><tr><th>Device</th><th>The failure it blocks</th></tr></thead>
+<tbody>
+<tr><td>No title screen</td><td>A model hides an empty world behind a menu.</td></tr>
+<tr><td>Four named shortcuts</td><td>A model builds the cheapest thing that matches the words.</td></tr>
+<tr><td>"Achieve with X, not raw counts"</td><td>A model either draws 100 objects or crashes the tab.</td></tr>
+<tr><td>Named landmarks</td><td>The word "buildings" produces boxes.</td></tr>
+<tr><td>Three scales of reading</td><td>A model builds detail for one distance only.</td></tr>
+<tr><td>Degrade order</td><td>A model cuts the wow to hit the frame rate.</td></tr>
+<tr><td>"If a feature is mentioned, make it visible, moving or inspectable"</td><td>A model writes a control that does nothing.</td></tr>
+<tr><td>Import map, pinned version</td><td>A bare Three.js import fails in the browser.</td></tr>
+<tr><td>devicePixelRatio clamp</td><td>A retina display quadruples the pixel cost.</td></tr>
+</tbody></table></div>
+
+<p>Write your negatives by predicting the failure. That is the whole method.</p>
+
+<hr>
+
+<!-- ===================== CHECKLIST ===================== -->
+<h2 id="checklist">8. Pre-flight checklist</h2>
+
+<p>Check a finished prompt against these 14 items. The collection satisfies all of them.</p>
+
+<div class="card">
+<ul>
+<li>The first sentence names the subject, the scale and the moment.</li>
+<li>Four cheap shortcuts are named and forbidden.</li>
+<li>The density target is stated with a unit.</li>
+<li>The technique that delivers the density is named. The lazy one is forbidden.</li>
+<li>The import-map block is present, word for word.</li>
+<li>"Everything procedural; no external assets" is present.</li>
+<li>The first frame is described. No menu, no title, no loading state.</li>
+<li>At least six landmarks or features are named individually.</li>
+<li>Four or five independent motion systems each have a bullet.</li>
+<li>The palette is named. For family B, hex codes are given.</li>
+<li>Four to seven camera presets are listed.</li>
+<li>Controls number three plus photo mode. No more.</li>
+<li>The degrade order names what drops and what never drops.</li>
+<li>The closing line gives the laptop target and one outcome sentence.</li>
+</ul>
+</div>
+
+<footer>
+  Built from <code>prompts.json</code> — 63 prompts, 297,893 bytes. All counts in this document come from a full-corpus scan of that file.
+  Worked examples are new. They follow the templates; they are not in the source collection. Family F was not named in the first pass; a grep of the strict-code import block and the &gt;=55 FPS target revealed it.
+</footer>
+
+</div>
+
+<script>
+document.querySelectorAll('.codewrap').forEach(function(w){
+  var b = w.querySelector('.copy'), p = w.querySelector('pre');
+  if(!b || !p) return;
+  b.addEventListener('click', function(){
+    navigator.clipboard.writeText(p.textContent).then(function(){
+      b.textContent = 'copied'; b.classList.add('ok');
+      setTimeout(function(){ b.textContent = 'copy'; b.classList.remove('ok'); }, 1400);
+    });
+  });
+});
+</script>
+</body>
+</html>
