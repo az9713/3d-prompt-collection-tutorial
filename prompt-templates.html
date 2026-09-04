@@ -33,7 +33,10 @@
 
   header.top{padding:60px 0 30px; border-bottom:1px solid var(--border-soft); margin-bottom:14px}
   h1{color:#f1f5f9; font-size:2.1rem; line-height:1.18; margin:0 0 12px; letter-spacing:-.022em}
-  .sub{color:var(--muted); font-size:1.02rem; margin:0}
+  .sub{color:var(--muted); font-size:1.02rem; margin:0 0 10px}
+  .src{margin:0; font-size:.86rem; color:var(--muted); font-family:var(--mono)}
+  .src a{color:var(--accent2); text-decoration:none; border-bottom:1px solid var(--border)}
+  .src a:hover{border-bottom-color:var(--accent2)}
   h2{
     color:var(--accent); font-size:1.4rem; margin:56px 0 16px;
     padding-bottom:9px; border-bottom:1px solid var(--border); letter-spacing:-.012em;
@@ -143,6 +146,7 @@
 <header class="top">
   <h1>3D Prompt Templates</h1>
   <p class="sub">What the 63 prompts in <code>prompts.json</code> have in common, and how to write another one.</p>
+  <p class="src">Source: <a href="https://github.com/petergpt/3d-prompt-collection">petergpt/3d-prompt-collection</a> · <a href="https://github.com/petergpt/3d-prompt-collection/blob/main/prompts.json">prompts.json</a> · <a href="https://raw.githubusercontent.com/petergpt/3d-prompt-collection/main/prompts.json">raw</a></p>
 </header>
 
 <p class="lead">This document does three things. It explains what the collection is. It shows that the 63 prompts are built from one shared pattern, and gives the counts that prove it. Then it turns that pattern into six templates you can fill in, each with a worked example.</p>
@@ -151,11 +155,11 @@
 
 <h2 id="source">1. What the source file is</h2>
 
-<p><code>prompts.json</code> is very plain. It holds one dictionary with two keys. The first key, <code>title</code>, is the text "3D Prompt Collection". The second key, <code>prompts</code>, is a list of 63 objects. Each object has exactly two fields, <code>title</code> and <code>prompt</code>. There are no tags, no notes, and no code.</p>
+<p><a href="https://github.com/petergpt/3d-prompt-collection/blob/main/prompts.json"><code>prompts.json</code></a> is very plain. It holds one dictionary with two keys. The first key, <code>title</code>, is the text "3D Prompt Collection". The second key, <code>prompts</code>, is a list of 63 objects. Each object has exactly two fields, <code>title</code> and <code>prompt</code>. There are no tags, no notes, and no code.</p>
 
 <p>The prompts differ greatly in length. The shortest is 532 characters. The middle one is 3,309. The longest is 12,527. That spread is not accidental. It is the clearest way to tell the six families apart, and section 4 uses it for exactly that.</p>
 
-<p>The <code>README.md</code> beside the file groups the same 63 prompts into six themed sections. Those sections describe subject matter. They are not the same as the six families in this document, which describe form.</p>
+<p>The <a href="https://github.com/petergpt/3d-prompt-collection#readme"><code>README.md</code></a> beside the file groups the same 63 prompts into six themed sections. Those sections describe subject matter. They are not the same as the six families in this document, which describe form.</p>
 
 <div class="tw"><table>
 <caption>The README's own grouping, by subject.</caption>
@@ -1117,7 +1121,7 @@ Present the castle directly - no long forest approach road. The viewer starts on
 </div>
 
 <footer>
-  <p>Built from <code>prompts.json</code>: 63 prompts, 297,893 bytes. Every count in this document comes from a scan of that whole file.</p>
+  <p>Built from <a href="https://github.com/petergpt/3d-prompt-collection/blob/main/prompts.json"><code>prompts.json</code></a> in <a href="https://github.com/petergpt/3d-prompt-collection">petergpt/3d-prompt-collection</a>: 63 prompts, 297,893 bytes. Every count in this document comes from a scan of that whole file.</p>
   <p>The six worked examples are new. They follow the templates and are not part of the source collection. Family F was not named in the first pass; a search for the strict-code import block and the explicit frame-rate target revealed it.</p>
 </footer>
 
