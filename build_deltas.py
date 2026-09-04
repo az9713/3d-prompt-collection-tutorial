@@ -354,7 +354,24 @@ def build():
     return '\n'.join(out)
 
 
+def check():
+    """The two guarantees. Run as `python build_deltas.py --check`."""
+    for n, p in enumerate(PROMPTS, 1):
+        rows = label_segments(p['prompt'])
+        assert ''.join(c for c, _r, _i, _x in rows) == p['prompt'], \
+            'prompt %d does not reconstruct' % n
+        shown = ({r for _c, r, inh, _x in rows if not inh} |
+                 {x for _c, _r, _i, xs in rows for x in xs})
+        assert shown == roles_of(p['prompt']), \
+            'prompt %d: gutter %s but strip %s' % (n, sorted(shown), sorted(roles_of(p['prompt'])))
+    print('all 63 reconstruct byte-for-byte; gutter matches strip everywhere')
+
+
 if __name__ == '__main__':
+    import sys
+    if '--check' in sys.argv:
+        check()
+        raise SystemExit
     page = io.open(PAGE, encoding='utf-8', newline='').read()
     i, j = page.index(BEGIN), page.index(END) + len(END)
     new = page[:i] + build() + page[j:]
