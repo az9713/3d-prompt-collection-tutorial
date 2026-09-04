@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>3D Prompt Templates — How the 63-Prompt Collection Is Built</title>
+<title>3D Prompt Templates — Meta-Patterns of the 63-Prompt Collection</title>
 <style>
   :root{
     --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --text2:#cbd5e1;
@@ -17,78 +17,77 @@
   html{scroll-behavior:smooth; scroll-padding-top:70px}
   body{
     margin:0; background:var(--bg); color:var(--text2);
-    font-family:var(--sans); font-size:16.5px; line-height:1.72;
+    font-family:var(--sans); font-size:16px; line-height:1.65;
     -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:860px; margin:0 auto; padding:0 22px 110px}
+  .wrap{max-width:980px; margin:0 auto; padding:0 20px 100px}
 
+  /* ---- nav ---- */
   nav{
     position:sticky; top:0; z-index:50; background:rgba(15,23,42,.94);
     backdrop-filter:blur(8px); border-bottom:1px solid var(--border-soft);
   }
-  nav .inner{max-width:860px; margin:0 auto; padding:10px 22px; display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center}
-  nav a{color:var(--muted); text-decoration:none; font-size:13px; white-space:nowrap}
+  nav .inner{max-width:980px; margin:0 auto; padding:10px 20px; display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center}
+  nav a{color:var(--muted); text-decoration:none; font-size:13px; letter-spacing:.02em; white-space:nowrap}
   nav a:hover{color:var(--accent2)}
   nav .brand{color:var(--accent); font-weight:700; font-size:13px; margin-right:6px}
 
-  header.top{padding:60px 0 30px; border-bottom:1px solid var(--border-soft); margin-bottom:14px}
-  h1{color:#f1f5f9; font-size:2.1rem; line-height:1.18; margin:0 0 12px; letter-spacing:-.022em}
-  .sub{color:var(--muted); font-size:1.02rem; margin:0}
+  /* ---- headings ---- */
+  header.top{padding:56px 0 28px; border-bottom:1px solid var(--border-soft); margin-bottom:36px}
+  h1{color:#f1f5f9; font-size:2.05rem; line-height:1.2; margin:0 0 10px; letter-spacing:-.02em}
+  .sub{color:var(--muted); font-size:1rem; margin:0}
   h2{
-    color:var(--accent); font-size:1.4rem; margin:56px 0 16px;
-    padding-bottom:9px; border-bottom:1px solid var(--border); letter-spacing:-.012em;
+    color:var(--accent); font-size:1.35rem; margin:52px 0 14px;
+    padding-bottom:8px; border-bottom:1px solid var(--border); letter-spacing:-.01em;
   }
-  h3{color:var(--accent2); font-size:1.08rem; margin:34px 0 12px}
-  h4{color:#f1f5f9; font-size:.95rem; margin:24px 0 9px; text-transform:uppercase; letter-spacing:.06em}
-  p{margin:0 0 17px}
-  strong{color:#f1f5f9; font-weight:600}
-  em{color:var(--text)}
+  h3{color:var(--accent2); font-size:1.06rem; margin:30px 0 10px; letter-spacing:.01em}
+  h4{color:#f1f5f9; font-size:.95rem; margin:22px 0 8px; text-transform:uppercase; letter-spacing:.06em}
+  p{margin:0 0 14px}
+  strong{color:#f1f5f9}
+  em{color:var(--text); font-style:italic}
   a{color:var(--accent2)}
-  .lead{font-size:1.06rem; color:var(--text)}
 
-  .note{border-left:3px solid var(--accent2); background:#152535; padding:14px 18px; margin:22px 0; border-radius:0 8px 8px 0}
-  .note p:last-child{margin-bottom:0}
-  .warn{border-left:3px solid var(--accent); background:#2a1e12; padding:14px 18px; margin:22px 0; border-radius:0 8px 8px 0}
-  .warn p:last-child{margin-bottom:0}
+  /* ---- blocks ---- */
+  .card{background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px 22px; margin:20px 0}
+  .card.tight{padding:14px 18px}
+  .note{border-left:3px solid var(--accent2); background:#152535; padding:12px 16px; margin:18px 0; border-radius:0 8px 8px 0; color:var(--text2)}
+  .warn{border-left:3px solid var(--accent); background:#2a1e12; padding:12px 16px; margin:18px 0; border-radius:0 8px 8px 0}
   .warn strong{color:var(--accent)}
-  .quote{
-    border-left:3px solid var(--border); padding:4px 0 4px 20px; margin:22px 0;
-    color:var(--text); font-style:italic;
-  }
-  .card{background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px 24px; margin:22px 0}
-  .card p:last-child, .card ul:last-child{margin-bottom:0}
 
-  ul{margin:0 0 18px; padding-left:22px}
-  ul li{margin:0 0 9px}
-  ol.proc{counter-reset:step; list-style:none; padding-left:0; margin:0 0 18px}
-  ol.proc li{counter-increment:step; position:relative; padding-left:46px; margin-bottom:10px}
+  ul,ol{margin:0 0 16px; padding-left:22px}
+  li{margin:0 0 7px}
+  ol.proc{counter-reset:step; list-style:none; padding-left:0}
+  ol.proc li{
+    counter-increment:step; position:relative; padding-left:44px; margin-bottom:9px;
+  }
   ol.proc li::before{
-    content:counter(step); position:absolute; left:0; top:3px;
-    width:30px; height:22px; line-height:22px; text-align:center;
+    content:counter(step); position:absolute; left:0; top:1px;
+    width:28px; height:22px; line-height:22px; text-align:center;
     background:var(--border); color:var(--accent2); border-radius:5px;
     font-family:var(--mono); font-size:12px; font-weight:700;
   }
-  ul.check{list-style:none; padding-left:0}
-  ul.check li{position:relative; padding-left:30px}
-  ul.check li::before{content:"☐"; position:absolute; left:4px; top:0; color:var(--accent2); font-size:15px}
 
-  .tw{overflow-x:auto; margin:22px 0; border:1px solid var(--border); border-radius:10px}
-  table{border-collapse:collapse; width:100%; font-size:.9rem; min-width:500px}
-  th{background:#172033; color:var(--accent2); text-align:left; padding:11px 15px; font-weight:600; border-bottom:1px solid var(--border); white-space:nowrap}
-  td{padding:10px 15px; border-bottom:1px solid var(--border-soft); vertical-align:top; line-height:1.55}
+  /* ---- tables ---- */
+  .tw{overflow-x:auto; margin:18px 0; border:1px solid var(--border); border-radius:10px}
+  table{border-collapse:collapse; width:100%; font-size:.9rem; min-width:520px}
+  th{background:#172033; color:var(--accent2); text-align:left; padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border); white-space:nowrap}
+  td{padding:9px 14px; border-bottom:1px solid var(--border-soft); vertical-align:top}
   tr:last-child td{border-bottom:none}
   td.num,th.num{text-align:right; font-family:var(--mono); color:var(--accent)}
-  caption{caption-side:top; text-align:left; padding:12px 15px 10px; color:var(--muted); font-size:.85rem; border-bottom:1px solid var(--border-soft)}
 
-  .codewrap{position:relative; margin:20px 0}
+  /* ---- code ---- */
+  .codewrap{position:relative; margin:16px 0}
   pre{
     background:#0b1220; border:1px solid var(--border); border-radius:10px;
-    padding:19px 21px; overflow-x:auto; margin:0;
-    font-family:var(--mono); font-size:12.5px; line-height:1.63; color:#cbd5e1;
+    padding:18px 20px; overflow-x:auto; margin:0;
+    font-family:var(--mono); font-size:12.5px; line-height:1.62; color:#cbd5e1;
     white-space:pre; tab-size:2;
   }
   pre.wrapped{white-space:pre-wrap}
-  code{font-family:var(--mono); font-size:.87em; background:#0b1220; border:1px solid var(--border-soft); padding:1px 5px; border-radius:4px; color:var(--accent2)}
+  code{font-family:var(--mono); font-size:.88em; background:#0b1220; border:1px solid var(--border-soft); padding:1px 5px; border-radius:4px; color:var(--accent2)}
+  pre code{background:none; border:none; padding:0}
+  .slot{color:var(--accent); font-weight:600}
+  .fixed{color:#7dd3fc}
   .copy{
     position:absolute; top:9px; right:9px; z-index:2;
     background:var(--border); color:var(--muted); border:1px solid #475569;
@@ -102,19 +101,19 @@
   .label{
     display:inline-block; font-family:var(--mono); font-size:11px; letter-spacing:.08em;
     text-transform:uppercase; color:var(--bg); background:var(--accent2);
-    padding:2px 9px; border-radius:4px; margin:6px 0 2px; font-weight:700;
+    padding:2px 8px; border-radius:4px; margin-bottom:8px; font-weight:700;
   }
-  .label.c{background:var(--accent)}
-  .fam-head{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-top:52px}
+  .label.b{background:var(--accent)}
+  .label.c{background:#64748b; color:#f1f5f9}
+  .fam-head{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-top:44px}
   .fam-meta{color:var(--muted); font-size:.83rem; font-family:var(--mono)}
-  hr{border:none; border-top:1px solid var(--border-soft); margin:50px 0}
-  footer{color:var(--muted); font-size:.87rem; margin-top:66px; padding-top:22px; border-top:1px solid var(--border-soft)}
+  hr{border:none; border-top:1px solid var(--border-soft); margin:44px 0}
+  footer{color:var(--muted); font-size:.85rem; margin-top:60px; padding-top:20px; border-top:1px solid var(--border-soft)}
   @media (max-width:640px){
-    h1{font-size:1.62rem}
-    body{font-size:16px}
-    .wrap{padding:0 15px 76px}
-    nav .inner{padding:8px 15px}
-    pre{font-size:11.5px; padding:15px}
+    h1{font-size:1.6rem}
+    .wrap{padding:0 14px 70px}
+    nav .inner{padding:8px 14px}
+    pre{font-size:11.5px; padding:14px}
   }
 </style>
 </head>
@@ -122,16 +121,15 @@
 
 <nav><div class="inner">
   <span class="brand">3D PROMPT TEMPLATES</span>
-  <a href="#source">The file</a>
   <a href="#evidence">Evidence</a>
   <a href="#spine">The spine</a>
   <a href="#families">Families</a>
-  <a href="#fa">A</a>
-  <a href="#fb">B</a>
-  <a href="#fc">C</a>
-  <a href="#fd">D</a>
-  <a href="#fe">E</a>
-  <a href="#ff">F</a>
+  <a href="#fa">A · Flagship</a>
+  <a href="#fb">B · Spec</a>
+  <a href="#fc">C · Single idea</a>
+  <a href="#fd">D · Arcade</a>
+  <a href="#fe">E · Ambition bar</a>
+  <a href="#ff">F · Landmark card</a>
   <a href="#blocks">Blocks</a>
   <a href="#bank">Word bank</a>
   <a href="#procedure">Procedure</a>
@@ -142,23 +140,16 @@
 
 <header class="top">
   <h1>3D Prompt Templates</h1>
-  <p class="sub">What the 63 prompts in <code>prompts.json</code> have in common, and how to write another one.</p>
+  <p class="sub">The meta-patterns of <code>prompts.json</code> — 63 prompts — turned into six fill-in templates with worked examples.</p>
 </header>
 
-<p class="lead">This document does three things. It explains what the collection is. It shows that the 63 prompts are built from one shared pattern, and gives the counts that prove it. Then it turns that pattern into six templates you can fill in, each with a worked example.</p>
+<h2 id="what">1. What the source file is</h2>
 
-<p>Every number here comes from a scan of the whole file. Where a sentence repeats across prompts, the prompt numbers are named so you can check them.</p>
+<p><code>prompts.json</code> holds a dict with two keys: <code>title</code> and <code>prompts</code>. <code>prompts</code> is a list of 63 objects. Each object has exactly two fields: <code>title</code> and <code>prompt</code>. There is no metadata and no code.</p>
 
-<h2 id="source">1. What the source file is</h2>
-
-<p><code>prompts.json</code> is very plain. It holds one dictionary with two keys. The first key, <code>title</code>, is the text "3D Prompt Collection". The second key, <code>prompts</code>, is a list of 63 objects. Each object has exactly two fields, <code>title</code> and <code>prompt</code>. There are no tags, no notes, and no code.</p>
-
-<p>The prompts differ greatly in length. The shortest is 532 characters. The middle one is 3,309. The longest is 12,527. That spread is not accidental. It is the clearest way to tell the six families apart, and section 4 uses it for exactly that.</p>
-
-<p>The <code>README.md</code> beside the file groups the same 63 prompts into six themed sections. Those sections describe subject matter. They are not the same as the six families in this document, which describe form.</p>
+<p>Prompt length: minimum 532 characters, median 3,309, maximum 12,527.</p>
 
 <div class="tw"><table>
-<caption>The README's own grouping, by subject.</caption>
 <thead><tr><th>README section</th><th>Prompts</th><th class="num">Count</th></tr></thead>
 <tbody>
 <tr><td>Big 3D Worlds</td><td>1–30</td><td class="num">30</td></tr>
@@ -169,131 +160,124 @@
 <tr><td>Elemental and Cosmic Finale</td><td>60–63</td><td class="num">4</td></tr>
 </tbody></table></div>
 
-<h3>Who these prompts are written for</h3>
+<h3>Who these prompts address</h3>
 
-<p>These are not prompts for a person. They are test prompts for a coding model, and two of them say so in plain words. Prompt 16 and prompt 18 both contain this sentence:</p>
+<p>They are one-shot benchmark prompts for a coding model. Prompts 16 and 18 say it in plain words:</p>
 
-<div class="quote">"The output should feel like a flagship benchmark scene for a frontier web agent."</div>
+<div class="note">"The output should feel like a flagship benchmark scene for a frontier web agent."</div>
 
-<p>Read that way, everything else falls into place. Each prompt asks for one web page that works on its own. 62 of the 63 name Three.js, the standard 3D library for browsers. 48 demand procedural generation, which means the code itself must build every shape, colour and texture. 33 state outright that no external files may be loaded. The model gets no pictures and no ready-made 3D models. It writes all of it.</p>
+<p>Each prompt asks for one self-contained web page. 62 of 63 name Three.js. 33 forbid external assets. 48 demand procedural generation. The model receives no images and no models. It must write everything as code.</p>
 
-<p>Somebody then opens that page, looks at the first thing on screen, moves the mouse, and forms a judgement. That single fact explains every pattern in this document. The prompts are not written to describe a scene. They are written to block the shortcuts a model would otherwise take.</p>
+<p>This single fact explains every pattern below. A grader looks at the first frame, moves the mouse, and judges. So each prompt blocks the shortcuts a model would otherwise take.</p>
 
-<h2 id="evidence">2. Evidence that one pattern underlies all 63</h2>
+<h2 id="evidence">2. Evidence that a template exists</h2>
 
-<p>The 63 prompts were not written from scratch 63 times. Whole sentences repeat, word for word, across many of them. That is the strongest evidence available, because identical text cannot be a coincidence.</p>
-
-<p>The instruction about loading the Three.js library appears in three fixed wordings. One is used 14 times, another 12 times, and a third 8 times. The long paragraph beginning "Absolute ambition bar" appears 7 times without a single character changed. More than 15 of the longer prompts end on the same closing shape: a sentence about running smoothly on a laptop, followed by one sentence starting "The outcome:".</p>
+<p>The collection is not 63 independent documents. Identical text repeats across prompts.</p>
 
 <div class="tw"><table>
-<caption>Text that repeats verbatim across prompts.</caption>
 <thead><tr><th>Repeated text</th><th class="num">Uses</th></tr></thead>
 <tbody>
-<tr><td>Import-map sentence, variant 1, ending "Everything procedural; no external assets."</td><td class="num">14</td></tr>
-<tr><td>Import-map sentence, variant 2, ending "no external image assets or models"</td><td class="num">12</td></tr>
-<tr><td>Import-map sentence, variant 3, ending "Never reuse identifiers in the same scope"<br><span style="color:var(--muted);font-size:.86em">prompts 6, 24, 25, 26, 35, 36, 37, 38</span></td><td class="num">8</td></tr>
-<tr><td>The "Absolute ambition bar…" paragraph, identical to the character<br><span style="color:var(--muted);font-size:.86em">prompts 16, 18, 43, 60, 61, 62, 63</span></td><td class="num">7</td></tr>
+<tr><td>Import-map sentence, variant 1 ("Everything procedural; no external assets.")</td><td class="num">14</td></tr>
+<tr><td>Import-map sentence, variant 2 ("no external image assets or models")</td><td class="num">12</td></tr>
+<tr><td>Import-map sentence, variant 3 ("Never reuse identifiers in the same scope")<br><span style="color:var(--muted);font-size:.85em">prompts 6, 24, 25, 26, 35, 36, 37, 38</span></td><td class="num">8</td></tr>
+<tr><td>"Absolute ambition bar…" paragraph, identical to the character<br><span style="color:var(--muted);font-size:.85em">prompts 16, 18, 43, 60, 61, 62, 63</span></td><td class="num">7</td></tr>
 <tr><td>"Smooth on a modern laptop, devicePixelRatio clamped to 2. The outcome: …"</td><td class="num">15+</td></tr>
 </tbody></table></div>
 
-<p>Below the level of exact sentences, the same ideas recur constantly. The table below counts how many of the 63 prompts contain each signal, and says what each one is there to prevent. Read the right-hand column and the whole collection makes sense as one long argument with a lazy model.</p>
+<h3>Signal counts across all 63 prompts</h3>
 
 <div class="tw"><table>
-<caption>Signal counts across all 63 prompts, with the failure each signal blocks.</caption>
 <thead><tr><th>Signal</th><th class="num">Prompts</th><th>What it enforces</th></tr></thead>
 <tbody>
-<tr><td>Names Three.js</td><td class="num">62</td><td>One target runtime, so the model cannot pick something obscure.</td></tr>
-<tr><td>"instanc…"</td><td class="num">58</td><td>Many copies of an object drawn in one go, so density is affordable.</td></tr>
-<tr><td>Import-map instruction</td><td class="num">50</td><td>Module loading that actually works in a browser.</td></tr>
+<tr><td>Names Three.js</td><td class="num">62</td><td>One target runtime.</td></tr>
+<tr><td>"instanc…"</td><td class="num">58</td><td>Density without draw calls.</td></tr>
+<tr><td>Import-map instruction</td><td class="num">50</td><td>Module loading that will not fail.</td></tr>
 <tr><td>"procedural"</td><td class="num">48</td><td>No downloads. Code makes everything.</td></tr>
-<tr><td>devicePixelRatio clamp</td><td class="num">48</td><td>A high-resolution screen cannot quietly quadruple the cost.</td></tr>
-<tr><td>"reset"</td><td class="num">45</td><td>The best view is always one click away.</td></tr>
-<tr><td>Orbit or another camera verb</td><td class="num">45</td><td>Exploration works from the first second.</td></tr>
-<tr><td>"Presets"</td><td class="num">44</td><td>The viewer gets composed shots without hunting for them.</td></tr>
-<tr><td>Compact or collapsible interface</td><td class="num">42</td><td>Buttons must not cover the picture.</td></tr>
-<tr><td>"alive" or "living"</td><td class="num">39</td><td>Motion is required, not optional.</td></tr>
-<tr><td>"LOD"</td><td class="num">39</td><td>Full detail near the camera, cheap versions far away.</td></tr>
-<tr><td>No title screen, no menu</td><td class="num">37</td><td>The first frame is what gets judged.</td></tr>
-<tr><td>"smooth on a modern laptop"</td><td class="num">37</td><td>One named hardware target, so "fast enough" has a meaning.</td></tr>
-<tr><td>"first frame"</td><td class="num">34</td><td>Second zero is designed on purpose.</td></tr>
-<tr><td>"silhouette"</td><td class="num">34</td><td>Shapes must still read from far away.</td></tr>
-<tr><td>"no external assets", images or models</td><td class="num">33</td><td>The output is one self-contained file.</td></tr>
-<tr><td>Quality selector</td><td class="num">33</td><td>What gets cut under load is decided by the author, not the model.</td></tr>
-<tr><td>"billion"</td><td class="num">27</td><td>The density target, stated as an impossible number.</td></tr>
-<tr><td>"This must not be…"</td><td class="num">26</td><td>Names the cheap answers and forbids them.</td></tr>
-<tr><td>"dynamic" or "dynamism"</td><td class="num">23</td><td>Several things must move at once, not one.</td></tr>
-<tr><td>"Single idea:"</td><td class="num">18</td><td>One sentence has to capture the whole scene.</td></tr>
-<tr><td>"maximum-ambition"</td><td class="num">17</td><td>The opening adjective that sets the ceiling.</td></tr>
-<tr><td>"photo mode"</td><td class="num">17</td><td>A clean screenshot with the interface hidden.</td></tr>
-<tr><td>A named palette</td><td class="num">16</td><td>No muddy default colours.</td></tr>
-<tr><td>"merged" geometry</td><td class="num">14</td><td>Distant areas become one object instead of thousands.</td></tr>
-<tr><td>"Absolute ambition bar"</td><td class="num">7</td><td>A reusable paragraph that raises the floor.</td></tr>
-<tr><td>Impostor or imposter</td><td class="num">5</td><td>The cheapest possible stand-in for very distant things.</td></tr>
-<tr><td>An explicit frame-rate target</td><td class="num">10</td><td>A number to hit, not a feeling.</td></tr>
+<tr><td>devicePixelRatio clamp</td><td class="num">48</td><td>A retina display cannot kill the frame rate.</td></tr>
+<tr><td>"reset"</td><td class="num">45</td><td>The hero view is always one click away.</td></tr>
+<tr><td>Orbit / camera verb</td><td class="num">45</td><td>Exploration works at once.</td></tr>
+<tr><td>"Presets"</td><td class="num">44</td><td>The grader gets composed shots for free.</td></tr>
+<tr><td>Compact controls / collapsible UI</td><td class="num">42</td><td>UI must not eat the picture.</td></tr>
+<tr><td>"alive" or "living"</td><td class="num">39</td><td>Motion is mandatory.</td></tr>
+<tr><td>"LOD"</td><td class="num">39</td><td>Detail near, cheap far.</td></tr>
+<tr><td>No title screen / no menu</td><td class="num">37</td><td>The first frame is the score.</td></tr>
+<tr><td>"smooth on a modern laptop"</td><td class="num">37</td><td>One named hardware target.</td></tr>
+<tr><td>"first frame"</td><td class="num">34</td><td>Second zero is designed.</td></tr>
+<tr><td>"silhouette"</td><td class="num">34</td><td>Shape must read at distance.</td></tr>
+<tr><td>"no external assets/models/images"</td><td class="num">33</td><td>Self-contained output.</td></tr>
+<tr><td>Quality selector</td><td class="num">33</td><td>Degradation is designed, not accidental.</td></tr>
+<tr><td>"billion"</td><td class="num">27</td><td>The density target.</td></tr>
+<tr><td>"This must not be…"</td><td class="num">26</td><td>The anti-shortcut clause.</td></tr>
+<tr><td>"dynamic" / "dynamism"</td><td class="num">23</td><td>Motion in several systems.</td></tr>
+<tr><td>"Single idea:"</td><td class="num">18</td><td>One sentence names the whole scene.</td></tr>
+<tr><td>"maximum-ambition"</td><td class="num">17</td><td>The opening adjective.</td></tr>
+<tr><td>"photo mode"</td><td class="num">17</td><td>A clean screenshot for the grader.</td></tr>
+<tr><td>Named palette</td><td class="num">16</td><td>No muddy default colors.</td></tr>
+<tr><td>"merged" geometry</td><td class="num">14</td><td>Far tier as one mesh.</td></tr>
+<tr><td>"Absolute ambition bar"</td><td class="num">7</td><td>The reusable closing paragraph.</td></tr>
+<tr><td>Impostor / imposter</td><td class="num">5</td><td>Cheapest far tier.</td></tr>
 </tbody></table></div>
 
 <h2 id="spine">3. The shared spine</h2>
 
-<p>All six families are built from the same eight parts, in the same order. Only the length and the packaging change. A 532-character arcade prompt and a 12,527-character flagship prompt do the same eight jobs; the short one just does several of them in a single clause.</p>
-
-<p>The prompt opens with an <strong>intent line</strong> that starts with a verb and names the subject, the scale, the light and the moment. A <strong>negative list</strong> follows in 26 of the 63 prompts: four cheap answers, named and forbidden. Then comes the <strong>goal and the means</strong> together, which is an impossible density paired at once with the technique that pays for it. After that the <strong>technical boilerplate</strong> is pasted in unchanged.</p>
-
-<p>The body then describes the <strong>first frame</strong>, which is what fills the screen before anyone touches anything. It builds the <strong>world and its life</strong>, naming real landmarks and four or five things that move independently. It lists the <strong>controls</strong>: a set of camera presets, three sliders, a photo mode and a reset. It closes on <strong>performance</strong>, which states the detail tiers, the order in which quality may be sacrificed, the laptop target, and one final sentence naming the payoff.</p>
+<p>All six families use the same eight parts, in the same order. Only the length and the packaging change.</p>
 
 <div class="tw"><table>
-<caption>The eight parts, in order.</caption>
 <thead><tr><th class="num">#</th><th>Part</th><th>Job</th></tr></thead>
 <tbody>
-<tr><td class="num">a</td><td><strong>Intent line</strong></td><td>Verb first. Names the subject, the scale, the light and the moment.</td></tr>
+<tr><td class="num">a</td><td><strong>Intent line</strong></td><td>Verb first. Names the subject, the scale, the light, and the moment.</td></tr>
 <tr><td class="num">b</td><td><strong>Negative list</strong></td><td>Four named shortcuts. "This must not be A, B, C or D."</td></tr>
 <tr><td class="num">c</td><td><strong>Goal plus means</strong></td><td>An impossible density, then the technique that pays for it.</td></tr>
-<tr><td class="num">d</td><td><strong>Technical boilerplate</strong></td><td>Import map. Procedural. No external files.</td></tr>
+<tr><td class="num">d</td><td><strong>Technical boilerplate</strong></td><td>Import map. Procedural. No external assets.</td></tr>
 <tr><td class="num">e</td><td><strong>First frame</strong></td><td>What fills the screen at second zero. No menus.</td></tr>
-<tr><td class="num">f</td><td><strong>World and life</strong></td><td>Named landmarks. Four or five independent moving systems.</td></tr>
-<tr><td class="num">g</td><td><strong>Controls</strong></td><td>Presets, three compact controls, photo mode, reset.</td></tr>
-<tr><td class="num">h</td><td><strong>Performance and outcome</strong></td><td>Detail tiers, degrade order, laptop target, one payoff sentence.</td></tr>
+<tr><td class="num">f</td><td><strong>World and life</strong></td><td>Named landmarks. Four or five independent motion systems.</td></tr>
+<tr><td class="num">g</td><td><strong>Controls</strong></td><td>Presets. Three compact controls. Photo mode. Reset.</td></tr>
+<tr><td class="num">h</td><td><strong>Performance and outcome</strong></td><td>LOD tiers, degrade order, laptop target, one payoff sentence.</td></tr>
 </tbody></table></div>
 
-<h3>The central trick: never ask for one without the other</h3>
+<h3>The writer's core trick: paired opposites</h3>
 
-<p>The writer of this collection never asks for a spectacular result without naming, in the same breath, the engineering that makes it affordable. Density is always paired with instancing. Fine detail is always paired with level of detail. Ambition is always paired with a laptop frame rate. A control is always paired with a visible consequence.</p>
+<p>Every prompt states the wow <em>and</em> the discipline that pays for it, in the same breath.</p>
 
-<p>This pairing removes an escape route. A model that is told only "make it dense" can either draw a hundred objects and call it dense, or draw a million and freeze the browser. Told both halves at once, it has to find the third answer, which is the correct one.</p>
+<ul>
+<li>Density is paired with instancing.</li>
+<li>Detail is paired with LOD.</li>
+<li>Ambition is paired with a laptop frame rate.</li>
+<li>A control is paired with a visible consequence.</li>
+</ul>
 
-<h3>The degrade order, the sharpest device in the collection</h3>
+<p>That pairing stops the model from choosing between "pretty" and "runs". It must deliver both.</p>
 
-<p>Every renderer eventually has to give something up to keep running. Left to itself, a model gives up whatever is easiest to remove, which is usually the thing the prompt was really about. The collection prevents this by naming the sacrifice order explicitly. Prompt 1 puts it like this:</p>
+<h3>The degrade order</h3>
 
-<div class="quote">"Quality selector degrades far window variation, traffic density and reflections <strong>before ever degrading</strong> island completeness or landmark silhouettes."</div>
+<p>This is the sharpest device in the collection. It tells the grader what counts. Prompt 1:</p>
 
-<p>The clause tells the model what the scene is for. Cheap things may go. The graded things may not. 33 of the 63 prompts contain a version of this instruction. If you write only one sentence from this whole document into your own prompt, write this one.</p>
+<div class="note">"Quality selector degrades far window variation, traffic density and reflections <strong>before ever degrading</strong> island completeness or landmark silhouettes."</div>
+
+<p>Without this clause, a model cuts the graded feature first to reach the frame rate.</p>
 
 <h2 id="families">4. The six families</h2>
 
-<p>Every family uses the spine. What separates them is length and packaging, so choose a family by how long you want the prompt to be, not by what the subject is. Any subject fits any family. Manhattan appears as a 6,719-character flagship in prompt 1 and as a 699-character arcade game in prompt 31. Giza appears three times over, as a specification in prompt 17, as a dense four-paragraph prompt in prompt 16, and as an arcade game in prompt 40.</p>
-
 <div class="tw"><table>
-<caption>The six families, by length.</caption>
 <thead><tr><th>Family</th><th>Length</th><th>Shape</th><th>Example prompts</th></tr></thead>
 <tbody>
-<tr><td><strong>A · Flagship</strong></td><td>6,000–12,500</td><td>Full section headers, all seven body sections.</td><td>1, 5, 45, 50, 51</td></tr>
-<tr><td><strong>B · Spec</strong></td><td>1,200–4,900</td><td>An engineering work order. Objective, then specifications.</td><td>2, 6, 17, 19, 27</td></tr>
-<tr><td><strong>C · Single idea</strong></td><td>2,600–3,500</td><td>One sentence carries the scene. Four short sections support it.</td><td>20–23, 28–30, 53–59</td></tr>
+<tr><td><strong>A · Flagship</strong></td><td>6,000–12,500</td><td>Full <code>####</code> headers, all seven body sections.</td><td>1, 5, 45, 50, 51</td></tr>
+<tr><td><strong>B · Spec</strong></td><td>1,200–4,900</td><td>OBJECTIVE / TECHNICAL SPECIFICATIONS. Hex palette.</td><td>2, 6, 17, 19, 27</td></tr>
+<tr><td><strong>C · Single idea</strong></td><td>2,600–3,500</td><td>A literal <code>Single idea:</code> line plus four short sections.</td><td>20–23, 28–30, 53–59</td></tr>
 <tr><td><strong>D · Arcade</strong></td><td>532–699</td><td>Five sentences. Pure fill-in.</td><td>31, 39, 40, 41</td></tr>
 <tr><td><strong>E · Ambition bar</strong></td><td>2,700–3,300</td><td>Four dense paragraphs, no headers.</td><td>16, 18, 60–63</td></tr>
-<tr><td><strong>F · Landmark card</strong></td><td>1,476–2,330</td><td>Terse topic headers. Strict-code block. Named frame-rate target.</td><td>24, 25, 26, 35–38</td></tr>
+<tr><td><strong>F · Landmark card</strong></td><td>1,476–2,330</td><td>Terse topic headers. Strict-code block. Named FPS target.</td><td>24, 25, 26, 35–38</td></tr>
 </tbody></table></div>
 
-<p>Family membership is a matter of form, not of blocks used. Prompt 43 sits in family A by its body, yet it also carries the family E ambition-bar paragraph. That paragraph travels well. You can add it to any family to raise the floor.</p>
+<p>Prompt 43 also carries the family E ambition-bar paragraph, inside an otherwise family A body. The paragraph is portable. Add it to any family to raise the floor.</p>
 
-<h3>How long the worked examples run</h3>
+<div class="warn"><strong>Choose by length, not by subject.</strong> Any subject fits any family. Manhattan appears as family A (prompt 1) and as family D material (prompt 31). Giza appears as family B (prompt 17), family E (prompt 16) and family D (prompt 40).</div>
 
-<p>Each family below comes with a worked example that I wrote for this document. None of them is in the source collection. The table records how long each one is against the length range observed in the source, so you can see where an example strays.</p>
+<h3>Length of the six worked examples below</h3>
 
-<p>Four of the six run over. This is honest rather than ideal, and the cause is simple: a subject with more named parts costs more words. If you need to bring a prompt back inside range, cut the landmark list first, then the run of micro-details. Never cut the degrade order.</p>
+<p>The range column reports the observed length of that family in the source collection. It is a guide, not a limit.</p>
 
 <div class="tw"><table>
-<caption>Length of each worked example against its family's observed range.</caption>
 <thead><tr><th>Family</th><th>Worked example</th><th class="num">Chars</th><th>Corpus range</th><th>Fit</th></tr></thead>
 <tbody>
 <tr><td>A</td><td>Billion-Piece Angkor</td><td class="num">7,329</td><td>6,000–12,500</td><td>inside</td></tr>
@@ -304,16 +288,17 @@
 <tr><td>F</td><td>Neuschwanstein</td><td class="num">2,655</td><td>1,476–2,330</td><td>325 over</td></tr>
 </tbody></table></div>
 
+<p>Four examples run over. A subject with more named parts costs more words. Trim the landmark list first, then the micro-detail run. Never trim the degrade order.</p>
+
 <hr>
 
+<!-- ===================== FAMILY A ===================== -->
 <div class="fam-head" id="fa">
   <h2 style="margin:0; border:none; padding:0">A · Flagship</h2>
-  <span class="fam-meta">6,000–12,500 chars · prompts 1, 5, 45, 50, 51</span>
+  <span class="fam-meta">6,000–12,500 chars · 7 sections · prompts 1, 5, 45, 50, 51</span>
 </div>
 
-<p>This is the full form, and it holds nothing back. Use it when the subject can carry a whole world and a camera that travels a long way, from a wide overview down to a close inspection. All seven body sections earn their place here, so drop none of them.</p>
-
-<p>The distinguishing move is the hero mechanic, which gets a section of its own. It is the one motion the entire build exists to deliver. In prompt 1 it is a continuous zoom from the whole of Manhattan down to street level. In prompt 45 it is flying into the sky of a Van Gogh painting and finding that it never ends. Naming that one movement, and naming what would ruin it, is what stops a flagship prompt becoming a list of nice things.</p>
+<p>The full form. Use it when the subject can carry a whole world and a continuous camera range. Every section earns its place; drop none of them.</p>
 
 <span class="label">Template</span>
 <div class="codewrap"><button class="copy">copy</button><pre>Create a [AMBITION ADJECTIVE] Three.js [environment|experience|scene|world] of
@@ -429,18 +414,19 @@ If you use Three.js, add an import map before the module script mapping "three" 
 
 <hr>
 
+<!-- ===================== FAMILY B ===================== -->
 <div class="fam-head" id="fb">
   <h2 style="margin:0; border:none; padding:0">B · Spec</h2>
-  <span class="fam-meta">1,200–4,900 chars · prompts 2, 6, 17, 19, 27</span>
+  <span class="fam-meta">1,200–4,900 chars · engineering-document tone · prompts 2, 6, 17, 19, 27</span>
 </div>
 
-<p>This family reads like a work order rather than a description. It is the most machine-readable of the six, and it suits a subject where you already know exactly what you want built and in what order.</p>
+<p>The engineering specification. Use it when you want to name exact hex colors, exact algorithms, and exact guardrails. This family is the most machine-readable of the five. It reads like a work order, not like a description.</p>
 
-<p>Two parts belong to it and to no other family. The <strong>implementation guardrails</strong> block names specific bugs to prevent, such as a statue sinking into a sand dune or a gap opening between the terrain and a riverbank. The <strong>final instruction</strong> block repeats the one contrast the scene depends on, in case everything before it has been diluted.</p>
+<p>Two devices belong to this family: the <strong>IMPLEMENTATION GUARDRAILS</strong> block, which names specific bugs to prevent, and the <strong>FINAL INSTRUCTION</strong> block.</p>
 
-<div class="warn"><p><strong>A note on hex colours.</strong> 16 prompts across the collection name a palette, but only one of them, prompt 17, gives actual hex codes. The hex lines in the template below are therefore optional and not a defining feature of the family. Use them when you want a colour locked exactly. Otherwise name the colour in words, as the other 15 prompts do.</p></div>
+<div class="warn"><strong>Accuracy note on hex.</strong> 16 prompts name a palette in words. Exactly one — prompt 17 — gives hex codes. The hex lines in the template below are therefore optional, not family-defining. Use them when you want a color locked. Otherwise name the color in words, as the other 15 do.</div>
 
-<span class="label">Template</span>
+<span class="label b">Template</span>
 <div class="codewrap"><button class="copy">copy</button><pre>#### OBJECTIVE
 
 - Construct a "Hyper-Fidelity" [Voxel|Polygonal] Simulation of [SUBJECT] at
@@ -654,24 +640,24 @@ If you use Three.js, add an import map before the module script mapping "three" 
 
 <hr>
 
+<!-- ===================== FAMILY C ===================== -->
 <div class="fam-head" id="fc">
   <h2 style="margin:0; border:none; padding:0">C · Single idea</h2>
-  <span class="fam-meta">2,600–3,500 chars · prompts 20–23, 28–30, 53–59</span>
+  <span class="fam-meta">2,600–3,500 chars · one sentence carries the scene · prompts 20–23, 28–30, 53–59</span>
 </div>
 
-<p>This is the most efficient family in the collection. One sentence defines the entire build, and everything after it exists to support that sentence. 18 prompts carry a line that literally begins <code>Single idea:</code>.</p>
+<p>The most efficient family. One sentence defines the whole build. Everything after it supports that sentence.</p>
 
-<p>The grammar of that line is fixed and worth copying exactly. It is a noun phrase describing the spectacle, then a dash, then one interaction the viewer can perform. The noun phrase supplies the picture. The interaction supplies the reason to stay. Neither half works alone, which is why the dash is doing real work.</p>
+<p>The <code>Single idea:</code> grammar is fixed. It is a noun phrase, an em dash, and one interaction:</p>
 
 <div class="tw"><table>
-<caption>The two halves of the "Single idea" line, in five source prompts.</caption>
 <thead><tr><th class="num">#</th><th>Spectacle noun phrase</th><th>The one interaction</th></tr></thead>
 <tbody>
 <tr><td class="num">55</td><td>a forest wearing a million butterflies</td><td>and one button that wakes them</td></tr>
 <tr><td class="num">54</td><td>the patience and violence of ice</td><td>a living wall that breaks on your command</td></tr>
 <tr><td class="num">53</td><td>the sheer mass of falling water as a living monument</td><td>and a boat ride into its throat</td></tr>
 <tr><td class="num">57</td><td>swimming through a galaxy of gold</td><td>with the simplest possible glide</td></tr>
-<tr><td class="num">56</td><td>emergent unison, chaos of sparks resolving into waves</td><td>and a slider that lets the viewer dial the magic</td></tr>
+<tr><td class="num">56</td><td>emergent unison — chaos of sparks resolving into waves</td><td>and a slider that lets the viewer dial the magic</td></tr>
 </tbody></table></div>
 
 <span class="label">Template</span>
@@ -747,14 +733,15 @@ Single idea: a hundred thousand fish behaving as one frightened animal - and a b
 
 <hr>
 
+<!-- ===================== FAMILY D ===================== -->
 <div class="fam-head" id="fd">
   <h2 style="margin:0; border:none; padding:0">D · Arcade</h2>
-  <span class="fam-meta">532–699 chars · prompts 31, 39, 40, 41</span>
+  <span class="fam-meta">532–699 chars · five sentences · prompts 31, 39, 40, 41</span>
 </div>
 
-<p>This is the tightest template in the collection. Four prompts share one five-sentence skeleton, and filling in eight slots produces a new one.</p>
+<p>The tightest template in the collection. Four prompts share one skeleton. Fill in eight slots and you have a new prompt.</p>
 
-<p>Each sentence has a single job. The first puts the player already in motion, which removes any need for a start button. The second forbids every front-end screen by name. The third states the goal and lists the scenery in one breath. The fourth names the four things the interface must show. The fifth gives four adjectives, which is the only place tone is set.</p>
+<p>Sentence 1 puts the player already in motion. Sentence 2 blocks every front-end screen. Sentence 3 states the goal and the scenery. Sentence 4 lists the required HUD. Sentence 5 gives four adjectives.</p>
 
 <span class="label">Template</span>
 <div class="codewrap"><button class="copy">copy</button><pre>[Create|Build] a bright Three.js [ACTIVITY] game [PREPOSITION] [SETTING].
@@ -767,25 +754,21 @@ Single idea: [VERB] through [MARKER TYPE] to reach the [FINAL TARGET] before the
 timer ends. [ONE SENTENCE naming 5-8 concrete scenery items.]
 
 Include timer, [MARKER] count, reset, compact controls, and a
-[close third-person|chase|smooth follow] camera.
+[close third-person|chase] camera.
 
 Make it [ADJ], [ADJ], [ADJ], and [ADJ].</pre></div>
 
 <h4>How the four originals fill the same slots</h4>
 
-<p>Reading the four source prompts side by side shows how little varies. All four close on exactly four adjectives. Only the camera wording shifts, and prompt 41 uses "a smooth follow camera" where the others say chase or close third-person.</p>
-
 <div class="tw"><table>
-<caption>The same eight slots, filled four different ways.</caption>
 <thead><tr><th>Slot</th><th>31 · Rooftop</th><th>39 · Venice</th><th>40 · Giza</th><th>41 · Amazon</th></tr></thead>
 <tbody>
 <tr><td>Activity</td><td>rooftop parkour</td><td>speedboat</td><td>sandboarding</td><td>zipline</td></tr>
 <tr><td>Already doing</td><td>running</td><td>steering</td><td>sliding downhill</td><td>sliding along a cable</td></tr>
 <tr><td>Marker</td><td>rooftop checkpoints</td><td>bridge gates</td><td>downhill gates</td><td>leaf rings</td></tr>
-<tr><td>HUD count</td><td>checkpoint count</td><td>gate count</td><td>gate count</td><td>ring count</td></tr>
 <tr><td>Final target</td><td>the final billboard</td><td>the finish dock</td><td>the oasis finish</td><td>the landing platform</td></tr>
-<tr><td>Camera</td><td>close third-person</td><td>chase</td><td>chase</td><td>smooth follow</td></tr>
-<tr><td>Four adjectives</td><td>bright, kinetic, legible, playable immediately</td><td>colorful, elegant, quick, instantly playable</td><td>golden, fast, sunny, clear</td><td>green, vivid, joyful, instantly playable</td></tr>
+<tr><td>Camera</td><td>close third-person</td><td>chase</td><td>chase</td><td>chase</td></tr>
+<tr><td>Four adjectives</td><td>bright, kinetic, legible, playable immediately</td><td>—</td><td>golden, fast, sunny, clear</td><td>—</td></tr>
 </tbody></table></div>
 
 <span class="label c">Worked example</span>
@@ -800,18 +783,19 @@ Include timer, gate count, reset, compact controls, and a chase camera.
 
 Make it bright, fast, sweeping, and instantly clear.</pre></div>
 
-<div class="note"><p>The example runs to 684 characters, which sits inside the family range of 532 to 699.</p></div>
+<div class="note">Character count of the example: 684. That sits inside the family range of 532–699.</div>
 
 <hr>
 
+<!-- ===================== FAMILY E ===================== -->
 <div class="fam-head" id="fe">
   <h2 style="margin:0; border:none; padding:0">E · Ambition bar</h2>
-  <span class="fam-meta">2,700–3,300 chars · prompts 16, 18, 60–63</span>
+  <span class="fam-meta">2,700–3,300 chars · four dense paragraphs, no headers · prompts 16, 18, 60–63</span>
 </div>
 
-<p>This is the densest family, and it uses no headers at all. Four paragraphs each take one job: the premise, the detail, the motion, and then the reusable ambition-bar paragraph pasted in unchanged.</p>
+<p>The densest family. No headers. Four paragraphs, each with one job: the premise, the detail, the motion, and the reusable ambition bar.</p>
 
-<p>The second and third paragraphs use very long comma-separated runs, and that is deliberate rather than careless. The run is a checklist wearing the clothes of a sentence. Giving the model twenty concrete nouns to build leaves no room for a vague answer, because a vague answer would visibly omit eighteen of them.</p>
+<p>Paragraph 2 and paragraph 3 use long comma-separated runs on purpose. The run is a checklist in prose. It gives the model twenty concrete nouns to build and leaves no room for a vague answer.</p>
 
 <span class="label">Template</span>
 <div class="codewrap"><button class="copy">copy</button><pre>Create the [SUPERLATIVE] Three.js [SUBJECT] possible: [one sentence, the whole
@@ -855,20 +839,21 @@ Absolute ambition bar: do not satisfy this prompt with a symbolic miniature, a s
 
 <hr>
 
+<!-- ===================== FAMILY F ===================== -->
 <div class="fam-head" id="ff">
   <h2 style="margin:0; border:none; padding:0">F · Landmark card</h2>
-  <span class="fam-meta">1,476–2,330 chars · prompts 24, 25, 26, 35, 36, 37, 38</span>
+  <span class="fam-meta">1,476–2,330 chars · terse topic headers · prompts 24, 25, 26, 35, 36, 37, 38</span>
 </div>
 
-<p>This is the quiet family. Seven prompts share it, and nothing in the README announces it. It covers one landmark or one toy set rather than a world, and it is the right choice when the subject is a single famous object seen from outside.</p>
+<p>The quiet family. Seven prompts share it and nothing in the collection announces it. It covers one landmark or one toy set, not a world.</p>
 
-<p>Three things identify it. It uses the strict-code version of the import instruction instead of the procedural one. It names an explicit frame-rate floor, written as <code>Target &gt;=55 FPS; clamp devicePixelRatio &lt;= 2</code>. Its headers are single nouns, such as SCENE, LANDMARKS, STYLE, CONTROLS and TECHNICAL.</p>
+<p>Three markers identify it. It uses the strict-code import block, not the procedural one. It names an explicit frame-rate floor: <code>Target &gt;=55 FPS and clamp devicePixelRatio &lt;= 2</code>. And its headers are single nouns: SCENE, LANDMARKS, STYLE, CONTROLS, TECHNICAL.</p>
 
-<p>What this family leaves out matters just as much. There is no negative "must not be" clause, no billion-piece claim, and no degrade order. The reason is structural rather than an oversight. A single building seen from one side is too small a target for a model to cheat by shrinking it, so the anti-cheat machinery of the larger families is simply not needed.</p>
+<p>What it drops matters as much. There is <strong>no</strong> negative "must not be" clause, <strong>no</strong> billion-piece claim, and <strong>no</strong> degrade order. The scene is small enough that the model cannot cheat by shrinking it.</p>
 
-<div class="note"><p>Prompt 6 uses the same strict-code block at 8,085 characters, yet it belongs to family B. The block travels between families; the family itself does not.</p></div>
+<div class="note">Prompt 6 uses the same strict-code block at 8,085 characters. It stays in family B. The block travels; the family does not.</div>
 
-<span class="label">Template</span>
+<span class="label b">Template</span>
 <div class="codewrap"><button class="copy">copy</button><pre>Create [THE ICONIC SUBJECT] at [LOCATION] - [THE FRAMING OR PRESENTATION RULE].
 
 If you use Three.js, add an import map (before the module script) mapping "three"
@@ -973,48 +958,42 @@ Present the castle directly - no long forest approach road. The viewer starts on
 
 <hr>
 
-<h2 id="blocks">5. Reusable blocks, to paste unchanged</h2>
+<!-- ===================== BLOCKS ===================== -->
+<h2 id="blocks">5. Reusable blocks — paste unchanged</h2>
 
-<p>These blocks already repeat across the collection, so there is nothing to gain by rewording them. Paste them as they are. Every one below is quoted exactly from the source file.</p>
+<p>These four blocks repeat across the collection. Do not rewrite them. Paste them.</p>
 
-<h3>Block 1 — Import map, standard wording (14 uses)</h3>
-<p>The default. Use it whenever the prompt asks for a generated world.</p>
+<h3>Block 1 — Import map, standard (14 uses)</h3>
 <div class="codewrap"><button class="copy">copy</button><pre class="wrapped">If you use Three.js, add an import map before the module script mapping "three" and "three/addons/" to the same pinned version, and import only via those names. Everything procedural; no external assets.</pre></div>
 
-<h3>Block 2 — Import map, strict-code wording (8 uses: prompts 6, 24, 25, 26, 35, 36, 37, 38)</h3>
-<p>This belongs to family F, plus prompt 6. It swaps the "everything procedural" clause for a naming rule. Use it on shorter prompts, where a variable-name collision is the more likely way the code breaks.</p>
+<h3>Block 2 — Import map, strict-code variant (8 uses: prompts 6, 24, 25, 26, 35, 36, 37, 38)</h3>
+<p>This variant belongs to family F, plus prompt 6. It replaces the "everything procedural" clause with a naming rule. Use it on short prompts where a scope collision is the likely failure.</p>
 <div class="codewrap"><button class="copy">copy</button><pre class="wrapped">If you use Three.js, add an import map (before the module script) mapping "three" and "three/addons/" to the same pinned version, and import only via those names. Never reuse identifiers in the same scope - use descriptive variable names.</pre></div>
 
 <h3>Block 3 — The ambition bar (7 uses: prompts 16, 18, 43, 60, 61, 62, 63)</h3>
-<p>The single most portable paragraph in the collection. It defines what "good enough" means, and it works appended to any family.</p>
 <div class="codewrap"><button class="copy">copy</button><pre class="wrapped">Absolute ambition bar: do not satisfy this prompt with a symbolic miniature, a sparse diorama, a single hero object, a mostly static scene, a flat shader demo or a clever but thin approximation. The output should feel like a flagship benchmark scene for a frontier web agent: immediate first-frame impact, visible motion in at least five independent systems, inspectable micro-detail at close range, strong silhouettes at wide range, meaningful camera modes, responsive controls with obvious visual consequences, and performance-conscious implementation using instancing, merged geometry, LOD, shader effects and GPU-friendly particles. Prioritize dynamic spectacle and concrete construction over explanatory UI. If a feature is mentioned, make it visible, moving or inspectable.</pre></div>
 
 <h3>Block 4 — The no-front-end clause (37 prompts carry a version)</h3>
-<p>Two wordings exist. The first suits a game, the second a scene.</p>
 <div class="codewrap"><button class="copy">copy</button><pre class="wrapped">Do not create a title screen, menu, level select, onboarding overlay, or press-start state.</pre></div>
 <div class="codewrap"><button class="copy">copy</button><pre class="wrapped">No menus, titles or reveals. [THE SUBJECT] is simply there, complete.</pre></div>
 
-<h3>Block 5 — The closing line (15 or more uses)</h3>
-<p>The hardware target and the payoff, in one breath.</p>
+<h3>Block 5 — The closing line (15+ uses)</h3>
 <div class="codewrap"><button class="copy">copy</button><pre class="wrapped">Smooth on a modern laptop, devicePixelRatio clamped to 2. The outcome: [ONE SENTENCE - THE EMOTIONAL PAYOFF].</pre></div>
 
 <hr>
 
+<!-- ===================== WORD BANK ===================== -->
 <h2 id="bank">6. Slot word bank</h2>
 
-<p>Everything listed here appears in the source collection. Use it to fill slots quickly rather than inventing wording that has not been tested.</p>
+<p>All entries below appear in the source collection. Use them to fill slots quickly.</p>
 
-<h3>Ambition adjectives, for the opening slot</h3>
+<h3>Ambition adjectives (the opening slot)</h3>
+<p>maximum-ambition (17) · unprecedented, museum-quality · monumental · staggering · breathtaking · the most ambitious … possible · the most astonishingly rich · the definitive · the ultimate high-detail · the most extreme real-time · the most visually luxurious · spectacular original · radiant · thunderous, complete · luminous · serene, sun-drenched · enchanted</p>
 
-<p>maximum-ambition, used 17 times, is the house default. The alternatives are: unprecedented and museum-quality; monumental; staggering; breathtaking; the most ambitious … possible; the most astonishingly rich; the definitive; the ultimate high-detail; the most extreme real-time; the most visually luxurious; spectacular original; radiant; thunderous and complete; luminous; serene and sun-drenched; enchanted.</p>
-
-<h3>The negative list, drawn from 26 prompts</h3>
-
-<p>Pick four that a lazy model would genuinely produce for your subject. A negative that names an unlikely failure is wasted, because it blocks nothing. The table groups the collection's own wording by the kind of failure it names.</p>
-
+<h3>Negative-list vocabulary (26 prompts)</h3>
+<p>Pick four that a lazy model would actually produce.</p>
 <div class="tw"><table>
-<caption>Negative-list wording, grouped by failure type.</caption>
-<thead><tr><th>Failure class</th><th>Wording used in the collection</th></tr></thead>
+<thead><tr><th>Failure class</th><th>Phrases used in the collection</th></tr></thead>
 <tbody>
 <tr><td>Too small</td><td>a single district · a single pyramid · a single ice sculpture · a symbolic miniature · a tabletop diorama · a dollhouse with three rooms · a small pile of yellow discs</td></tr>
 <tr><td>Too sparse</td><td>a sparse diorama · a sparse waterfront · a postcard with three props · three breakable boxes on a plane · a sparse model on flat ground · an empty walkway</td></tr>
@@ -1025,100 +1004,98 @@ Present the castle directly - no long forest approach road. The viewer starts on
 <tr><td>Wrong genre</td><td>a particle screensaver · a particle demo · a physics tech demo on a gray plane · an abstract music-visualizer · a gray tech demo · an educational diagram · a UI-heavy engineering tool · a menu of effects · an arcade ring course</td></tr>
 </tbody></table></div>
 
-<h3>Controls, from the 42 prompts that restrict them</h3>
+<h3>Control vocabulary (42 prompts)</h3>
+<p>Never exceed four controls. Photo mode is the fourth in 17 prompts.</p>
+<p>time of light / time of day · weather state · season · activity density · traffic density · crowd density · water clarity · caustic strength · tide depth · flow intensity · storm phase · swirl density · flight speed · time dilation · creature activity · quality selector · <strong>photo mode</strong></p>
 
-<p>Never go beyond four. In 17 prompts the fourth is photo mode. The tested options are: time of light or time of day; weather state; season; activity density; traffic density; crowd density; water clarity; caustic strength; tide depth; flow intensity; storm phase; swirl density; flight speed; time dilation; creature activity; quality selector; and photo mode.</p>
+<h3>Preset vocabulary (44 prompts)</h3>
+<p>Write 4 to 7, separated by semicolons. Each names a composition, not a coordinate.</p>
+<p>the hero vista · a close orbit of the single hero object · eye level inside the crowd · the summit or rooftop panorama · the approach or arrival route · the macro inspection pass · the impossible vantage looking back at the start · an auto-tour toggle that flies the route hands-free</p>
 
-<h3>Camera presets, from the 44 prompts that list them</h3>
-
-<p>Write four to seven, separated by semicolons. Each one names a composition, not a coordinate, which is what makes them usable by a model that has no idea where anything ended up. The recurring shapes are: the hero vista; a close orbit of the single hero object; eye level inside the crowd; the summit or rooftop panorama; the approach or arrival route; the macro inspection pass; and the impossible vantage looking back at where you started. Several prompts add an auto-tour toggle that flies the whole route hands-free.</p>
-
-<h3>Performance wording, from the 58, 39 and 33 prompts that demand it</h3>
-
-<p>The collection's own phrases are worth reusing verbatim: brutal instancing discipline; InstancedMesh is mandatory; merged district meshes at far tier; instanced archetypes with per-instance variation; bespoke detail streaming near the camera; imposters for the far tier; nested LOD; geo-morphed or cross-faded tier transitions; pooled lifetimes; GPU-friendly particles; flow fields; stateful instanced agents; waypoint state machines; clamp devicePixelRatio to 2; no memory explosions; and target 55 FPS or better.</p>
+<h3>Performance vocabulary (58 / 39 / 33 prompts)</h3>
+<p>brutal instancing discipline · InstancedMesh is mandatory · merged district meshes at far tier · instanced archetypes with per-instance variation · bespoke detail streaming near the camera · imposters for the far tier · nested LOD · geo-morphed or cross-faded tier transitions · pooled lifetimes · GPU-friendly particles · flow fields · stateful instanced agents · waypoint state machines · clamp devicePixelRatio to 2 · no memory explosions · target ≥55 FPS</p>
 
 <hr>
 
-<h2 id="procedure">7. How to write a new prompt</h2>
-
-<p>Work through these steps in order. Steps 1 to 3 are decisions. Steps 4 to 21 are writing. Step 22 is the check.</p>
+<!-- ===================== PROCEDURE ===================== -->
+<h2 id="procedure">7. Procedure — write a new prompt</h2>
 
 <ol class="proc">
 <li>Pick one subject and one exact moment. Name the light.</li>
 <li>Write the hook in one line. Example: "a forest wearing a million butterflies".</li>
-<li>Choose the family by target length. Use the table in section 4.</li>
+<li>Choose the family by target length. See the family table above.</li>
 <li>Write the intent sentence. Start with the verb "Create" or "Build".</li>
-<li>List four cheap answers a model would give. Use the negative-list table.</li>
+<li>List four cheap answers a model would give. Use the negative-list word bank.</li>
 <li>Write the negative clause: "This must not be A, B, C, or D."</li>
 <li>State the impossible density. Name the unit: pieces, brushstrokes, wings, blocks.</li>
 <li>Name the technique that pays for it. Forbid the lazy alternative in the same sentence.</li>
-<li>Paste the import-map block. Choose the standard or the strict wording.</li>
-<li>Write the first frame. Describe only what fills the screen at second zero.</li>
+<li>Paste the import-map block. Choose the standard or the strict variant.</li>
+<li>Write FIRST FRAME. Describe only what fills the screen at second zero.</li>
 <li>Add the no-front-end clause. Use block 4.</li>
 <li>Name the hero mechanic in its own header. Name the failure it must avoid.</li>
-<li>List six to ten real landmarks or features by name. Give true proportions.</li>
-<li>Write four or five independent moving systems. Give each one its own bullet.</li>
-<li>State the default light. Name four to six material classes.</li>
-<li>Write four to seven camera presets. Separate them with semicolons.</li>
+<li>List 6 to 10 real landmarks or features by name. Give true proportions.</li>
+<li>Write four or five independent motion systems. Give each its own bullet.</li>
+<li>State the default light state. Name 4 to 6 material classes.</li>
+<li>Write 4 to 7 camera presets. Separate them with semicolons.</li>
 <li>Write "Compact controls only:" then three controls and photo mode.</li>
-<li>Write the performance tiers: far, mid, near, impostor.</li>
+<li>Write the performance tiers: far, mid, near, imposter.</li>
 <li>Write the degrade order. Name what may drop and what may never drop.</li>
 <li>Close with "Smooth on a modern laptop, devicePixelRatio clamped to 2."</li>
 <li>Write the outcome sentence. Name the feeling, not the feature.</li>
 <li>Count the characters. Compare against the family range. Cut or expand.</li>
 </ol>
 
-<div class="warn"><p><strong>Warning:</strong> do not skip step 19. Without a degrade order, a model cuts the graded feature first to reach the frame rate.</p></div>
+<div class="warn"><strong>Warning:</strong> do not skip step 19. Without a degrade order, a model cuts the graded feature first to reach the frame rate.</div>
 
-<h3>The rule behind all the rules</h3>
+<h3>The rule behind the rules</h3>
 
-<p>Every device in this collection answers one question: what will the model do wrong here, and how do I block it? Once you see that, the prompts stop looking like descriptions and start looking like defences. The table below pairs each device with the exact failure it prevents.</p>
+<p>Every section answers one question: what will the model do wrong here, and how do I block it?</p>
 
 <div class="tw"><table>
-<caption>Each device and the failure it exists to prevent.</caption>
 <thead><tr><th>Device</th><th>The failure it blocks</th></tr></thead>
 <tbody>
 <tr><td>No title screen</td><td>A model hides an empty world behind a menu.</td></tr>
 <tr><td>Four named shortcuts</td><td>A model builds the cheapest thing that matches the words.</td></tr>
-<tr><td>"Achieve with X, not raw counts"</td><td>A model either draws 100 objects or freezes the browser.</td></tr>
+<tr><td>"Achieve with X, not raw counts"</td><td>A model either draws 100 objects or crashes the tab.</td></tr>
 <tr><td>Named landmarks</td><td>The word "buildings" produces boxes.</td></tr>
-<tr><td>Three scales of reading</td><td>A model builds detail for one viewing distance only.</td></tr>
-<tr><td>Degrade order</td><td>A model cuts the best part to reach the frame rate.</td></tr>
-<tr><td>"If a feature is mentioned, make it visible, moving or inspectable"</td><td>A model adds a control that does nothing.</td></tr>
-<tr><td>Import map, pinned version</td><td>A plain Three.js import fails in the browser.</td></tr>
-<tr><td>devicePixelRatio clamp</td><td>A high-resolution display quadruples the pixel cost.</td></tr>
+<tr><td>Three scales of reading</td><td>A model builds detail for one distance only.</td></tr>
+<tr><td>Degrade order</td><td>A model cuts the wow to hit the frame rate.</td></tr>
+<tr><td>"If a feature is mentioned, make it visible, moving or inspectable"</td><td>A model writes a control that does nothing.</td></tr>
+<tr><td>Import map, pinned version</td><td>A bare Three.js import fails in the browser.</td></tr>
+<tr><td>devicePixelRatio clamp</td><td>A retina display quadruples the pixel cost.</td></tr>
 </tbody></table></div>
 
-<p>So write your negatives by predicting the failure first, then forbidding it by name. That is the whole method, and everything else in this document is detail hanging off it.</p>
+<p>Write your negatives by predicting the failure. That is the whole method.</p>
 
 <hr>
 
+<!-- ===================== CHECKLIST ===================== -->
 <h2 id="checklist">8. Pre-flight checklist</h2>
 
-<p>Check a finished prompt against these 14 items. The source collection satisfies all of them.</p>
+<p>Check a finished prompt against these 14 items. The collection satisfies all of them.</p>
 
 <div class="card">
-<ul class="check">
+<ul>
 <li>The first sentence names the subject, the scale and the moment.</li>
 <li>Four cheap shortcuts are named and forbidden.</li>
-<li>The density target is stated, with a unit.</li>
-<li>The technique that delivers the density is named, and the lazy one is forbidden.</li>
+<li>The density target is stated with a unit.</li>
+<li>The technique that delivers the density is named. The lazy one is forbidden.</li>
 <li>The import-map block is present, word for word.</li>
 <li>"Everything procedural; no external assets" is present.</li>
 <li>The first frame is described. No menu, no title, no loading state.</li>
 <li>At least six landmarks or features are named individually.</li>
-<li>Four or five independent moving systems each have their own bullet.</li>
+<li>Four or five independent motion systems each have a bullet.</li>
 <li>The palette is named. For family B, hex codes are given.</li>
 <li>Four to seven camera presets are listed.</li>
-<li>Controls number three, plus photo mode. No more.</li>
+<li>Controls number three plus photo mode. No more.</li>
 <li>The degrade order names what drops and what never drops.</li>
 <li>The closing line gives the laptop target and one outcome sentence.</li>
 </ul>
 </div>
 
 <footer>
-  <p>Built from <code>prompts.json</code>: 63 prompts, 297,893 bytes. Every count in this document comes from a scan of that whole file.</p>
-  <p>The six worked examples are new. They follow the templates and are not part of the source collection. Family F was not named in the first pass; a search for the strict-code import block and the explicit frame-rate target revealed it.</p>
+  Built from <code>prompts.json</code> — 63 prompts, 297,893 bytes. All counts in this document come from a full-corpus scan of that file.
+  Worked examples are new. They follow the templates; they are not in the source collection. Family F was not named in the first pass; a grep of the strict-code import block and the &gt;=55 FPS target revealed it.
 </footer>
 
 </div>
