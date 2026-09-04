@@ -84,67 +84,125 @@ PAT = {k: p for k, _l, p in ROLES if p}
 ROLE_NAME = {k: l for k, l, _p in ROLES}
 
 
-def label_segments(text):
-    """Return [(chunk, role, inherited)], the chunks concatenating back to text.
+# --- 2b. sections, labelled at the author's own boundaries -------------------
+# The spine is a section-level structure, so it is read at section level. A
+# sentence-level reading fires on stray wording and produces one-line labels
+# that say nothing; this reads whole sections instead, cut where Peter cut them.
+HEAD_RE = re.compile(r'^\s*#{2,}\s*\S')
 
-    The opening segment is part a by definition. After that a segment takes the
-    first part its own wording matches, in PRIORITY order. A segment matching
-    nothing inherits the part above it, which is what a bullet under a labelled
-    header is doing anyway; those are marked inherited so the two are told apart.
+# A section under a heading is labelled by its heading. Peter's headings are
+# themselves part of the lesson: PERFORMANCE DISCIPLINE is part h, whatever the
+# sentences underneath happen to mention.
+HEAD_RULES = [
+    ('h', r'performance|fps|frame rate|budget|discipline'),
+    ('g', r'control|exploration|navigat|interact|camera'),
+    ('e', r'first frame|opening|title screen'),
+    ('d', r'technical|implementation|guardrail|output instruction|specification'),
+    ('b', r'must not|avoid|forbidden'),
+    ('c', r'objective|goal|scope|detail|fidelity|requirement|landmark'),
+    ('f', r'alive|life|living|dynamis|motion|atmosphere|light'),
+]
+
+F_WEIGHT = 0.5      # f's keyword list is the loosest; unweighted it wins sections
+                    # that plainly belong to another part
+D_STRICT = r'import map|es modules|no external|bundler|pinned version'
+SECOND = 0.25       # a part holding this share of a section earns a second letter
+
+
+def sections(text):
+    """Cut into sections at markdown headings and blank lines.
+
+    Returns [(chunk, heading or None)]. The chunks concatenate back to text.
     """
-    segs = segments(text)
-    labels = [None] * len(segs)             # role per segment, None = separator
-    first = True
-    for i, seg in enumerate(segs):
-        if not seg.strip():                 # separator: stays with the block above
-            continue
-        if first:
-            labels[i], first = 'a', False
-            continue
-        low = seg.lower()
-        labels[i] = next((k for k in PRIORITY if re.search(PAT[k], low)), None)
-
-    # A part can be present in the prompt yet never win a segment, because every
-    # sentence carrying it also carries a higher-priority part. Give it the one
-    # segment it matches, but only where that does not erase the part already
-    # there, so the gutter shows exactly the parts the strip shows.
-    for missing in [k for k in PRIORITY if k in roles_of(text)
-                    and k not in {l for l in labels if l}]:
-        counts = collections.Counter(l for l in labels if l)
-        for i, seg in enumerate(segs):
-            if labels[i] and counts[labels[i]] > 1 and re.search(PAT[missing], seg.lower()):
-                labels[i] = missing
-                break
-
-    # If a part is still unrepresented, its only evidence sits inside a block
-    # whose own part appears nowhere else. Both are true, so both are shown:
-    # that block carries a second letter.
-    extra = collections.defaultdict(list)
-    for missing in [k for k in PRIORITY if k in roles_of(text)
-                    and k not in {l for l in labels if l}]:
-        for i, seg in enumerate(segs):
-            if labels[i] and re.search(PAT[missing], seg.lower()):
-                extra[i].append(missing)
-                break
-
-    rows, cur, cur_role, cur_inh, cur_x = [], '', None, False, []
-    for i, (seg, lab) in enumerate(zip(segs, labels)):
-        if not seg.strip():
+    out, cur, cur_head, prev_sep = [], '', None, ''
+    for seg in segments(text):
+        if not seg.strip():                 # separator: closes the section above
             cur += seg
+            prev_sep = seg
             continue
-        inh = lab is None
-        role = cur_role if inh else lab
-        x = extra.get(i, [])
-        if role != cur_role or inh != cur_inh or x:
-            if cur:
-                rows.append((cur, cur_role, cur_inh, cur_x))
-            cur, cur_role, cur_inh, cur_x = seg, role, inh, x
-        else:
-            cur += seg
+        head = bool(HEAD_RE.match(seg))
+        blank = prev_sep.count('\n') >= 2
+        if cur.strip() and (head or blank):
+            out.append((cur, cur_head))
+            cur, cur_head = '', None
+        if head and cur_head is None:
+            cur_head = seg.strip()
+        cur += seg
+        prev_sep = ''
     if cur:
-        rows.append((cur, cur_role, cur_inh, cur_x))
+        out.append((cur, cur_head))
+    return out
+
+
+def section_role(chunk, head, got):
+    """(primary part, [second part]) for one section, or (None, []) if silent.
+
+    `got` is the parts the whole prompt contains. A heading never introduces a
+    part the prompt does not otherwise show; it only decides which of the parts
+    already there owns this section.
+    """
+    if head:
+        low = head.lower()
+        k = next((k for k, pat in HEAD_RULES if re.search(pat, low) and k in got), None)
+        if k:
+            # b still gets its second letter here. A heading settles the section,
+            # but a "must not" sentence inside it is the move worth seeing and
+            # would otherwise vanish from the page.
+            return k, (['b'] if k != 'b' and re.search(PAT['b'], chunk.lower()) else [])
+    tally = collections.Counter()
+    for seg in segments(chunk):
+        if not seg.strip():
+            continue
+        k = next((k for k in PRIORITY if re.search(PAT[k], seg.lower())), None)
+        if k:
+            tally[k] += len(seg) * (F_WEIGHT if k == 'f' else 1)
+    # d is the part that is pasted unchanged, so a section is only d when it
+    # carries the boilerplate wording itself. "Procedural" on its own is ordinary
+    # vocabulary here and would take sections away from the part they belong to.
+    if 'd' in tally and not re.search(D_STRICT, chunk.lower()):
+        del tally['d']
+    if not tally:
+        return None, []
+    ranked = tally.most_common()
+    total = sum(tally.values())
+    # b, the negative list, is the one genuinely optional part and it is always
+    # two or three sentences inside a longer section, so it never wins one. It is
+    # shown whenever it is there; every other part must earn its second letter.
+    second = [k for k, v in ranked[1:] if v >= SECOND * total][:1]
+    if 'b' in tally and ranked[0][0] != 'b' and 'b' not in second:
+        second.append('b')
+    return ranked[0][0], second
+
+
+def label_sections(text):
+    """Return [(chunk, role, second_roles)], the chunks concatenating back to text.
+
+    One letter per section. The opening section is part a by definition, since
+    it is where the prompt names its subject; whatever else it carries becomes
+    its second letter. A section whose wording matches nothing continues the
+    part above it, and neighbouring sections with the same single letter merge,
+    so the gutter shows the shape of the prompt rather than every sentence.
+    """
+    rows, prev, got = [], None, roles_of(text)
+    for i, (chunk, head) in enumerate(sections(text)):
+        role, extra = section_role(chunk, head, got)
+        if i == 0:
+            # The opening section names the subject, so it is a. Whatever else it
+            # carries becomes its second letter, b first: the negative list lives
+            # here in most prompts and it is the move worth seeing.
+            seen, got_here = set(), [r for r in ([role] + extra) if r and r != 'a']
+            got_here.sort(key=lambda r: r != 'b')
+            extra = [r for r in got_here if not (r in seen or seen.add(r))][:2]
+            role = 'a'
+        elif role is None:
+            role, extra = (prev or 'a'), []
+        prev = role
+        if rows and rows[-1][1] == role and not extra and not rows[-1][2]:
+            rows[-1][0] += chunk
+        else:
+            rows.append([chunk, role, extra])
     assert ''.join(r[0] for r in rows) == text
-    return rows
+    return [tuple(r) for r in rows]
 
 
 # --- 3. families ------------------------------------------------------------
@@ -229,20 +287,18 @@ def card(n, p):
     pct = int(round(100.0 * shared / len(text)))
 
     body = []
-    for chunk, role, inherited, extra_roles in label_segments(text):
+    for chunk, role, extra_roles in label_sections(text):
         marked = []
         for seg in segments(chunk):
             marked.append('<span class="reused">%s</span>' % esc(seg)
                           if is_reused(seg) else esc(seg))
-        gut = ('<span class="g %s%s" title="%s%s">%s</span>'
-               % (role, ' inh' if inherited else '',
-                  esc(ROLE_NAME[role]),
-                  ', inherited from the block above' if inherited else '', role))
+        gut = ('<span class="g %s">%s</span><span class="gname">%s</span>'
+               % (role, role, esc(ROLE_NAME[role].lower())))
         for x in extra_roles:
-            gut += ('<span class="g %s also" title="%s, also in this block">%s</span>'
-                    % (x, esc(ROLE_NAME[x]), x))
-        body.append('<div class="prow2"><span class="guts">%s</span><pre>%s</pre></div>'
-                    % (gut, ''.join(marked).strip('\n')))
+            gut += ('<span class="gname also">and %s, %s</span>'
+                    % (x, esc(ROLE_NAME[x].lower())))
+        body.append('<div class="sec %s"><div class="sechd">%s</div><pre>%s</pre></div>'
+                    % (role, gut, ''.join(marked).strip('\n')))
 
     bhtml = ''.join(
         '<span class="blk%s">Block %s &middot; %s%s</span>'
@@ -305,24 +361,69 @@ OUTRO_HEAD = """
 <h3>Every prompt, opened up</h3>
 
 <p>Click a title to open it. The strip repeats the eight parts for that prompt. The prompt
-itself is then annotated: a letter in the left margin says which part each block of text
-is doing, so you can read the pattern down the page against the wording that fills it.
-Within the text, dimmed wording appears in at least one other prompt as well; everything
-at full contrast is unique to this one.</p>
+is then cut into sections and each section is headed with the part it is doing, so the
+shape of the prompt can be read down the page against the wording that fills it. Within
+the text, dimmed wording appears in at least one other prompt as well; everything at full
+contrast is unique to this one.</p>
 
-<p>A block takes the first part its own wording matches. A block whose wording matches
-nothing, usually a bullet under a labelled header, inherits the part above it and its
-letter is drawn hollow to show that. Twice in the whole collection a single sentence is
-the only evidence for two different parts, and that block carries a second, smaller
-letter rather than hiding one of them. Nothing is reordered: the text runs exactly as it
-does in <code>prompts.json</code>, which is also why the letters do not always run
-straight from a to h.</p>
+<p>The sections are Peter's own. The cut falls where he put a markdown heading, which {heads}
+of the 63 prompts use, and at a blank line everywhere else. Nothing is reordered or
+reworded: each section runs exactly as it does in <code>prompts.json</code>. Where a
+section carries a heading, the heading names the part, which is itself worth learning:
+<em>Performance discipline</em> is part h and <em>Exploration and controls</em> is part g,
+whatever the sentences underneath happen to mention. Where there is no heading, the part
+that owns the most characters in the section wins it. That gives {secs} sections across the
+collection, {per} per prompt.</p>
+
+<p>A second, quieter label appears where one section is plainly doing two jobs: the part
+holds at least a quarter of the section, or it is part b. The negative list is short and
+always sits inside a longer opening paragraph, so it never wins a section on length, yet
+it is one of the moves most worth seeing; it is shown wherever it occurs. The opening
+section is part a by definition, because that is where a prompt names its subject, and
+what else it carries is shown beside it.</p>
+
+<p class="note">The strip and the section headings measure two different things and will
+not always agree. The strip asks whether a part appears anywhere in the prompt; the
+headings ask which part dominates each section. A part can be present and dominate no
+section, so a letter can sit in the strip and never appear down the page. The reverse
+never happens: every letter in the page is also in the strip, and a build assertion
+enforces it. One consequence worth naming: the spine is ordered on average &mdash; the
+median position of each part through the text runs {order} &mdash; but only {mono} of the
+63 prompts run cleanly from a to h without revisiting a part. Peter comes back to detail after controls, and puts life back in after
+performance.</p>
 
 <p class="legend"><span class="k reused-k"></span>reused in another prompt
 <span class="k unique-k"></span>this prompt only
-<span class="k fixed-k"></span>part d, the block pasted unchanged
-<span class="k inh-k"></span>part inherited from the block above</p>
+<span class="k fixed-k"></span>part d, the block pasted unchanged</p>
 """
+
+
+def outro():
+    """OUTRO_HEAD with its four figures measured rather than typed."""
+    # a, then b/d/e, then c/f, then g, then h: the average order of the spine.
+    rank = {'a': 0, 'b': 1, 'd': 1, 'e': 1, 'c': 2, 'f': 2, 'g': 3, 'h': 4}
+    # Where each part's wording sits in a prompt, as a fraction of its length.
+    # This is measured on sentences, independently of how sections are labelled.
+    pos = collections.defaultdict(list)
+    for p in PROMPTS:
+        t = p['prompt']
+        for m in re.finditer(r'[^\n]+', t):
+            k = next((k for k in PRIORITY if re.search(PAT[k], m.group(0).lower())), None)
+            if k:
+                pos[k].append((m.start() + m.end()) / 2.0 / len(t))
+    pos['a'] = [0.0]
+    order = ', '.join(sorted(pos, key=lambda k: sorted(pos[k])[len(pos[k]) // 2]))
+    secs = mono = heads = 0
+    for p in PROMPTS:
+        rows = label_sections(p['prompt'])
+        secs += len(rows)
+        if re.search(r'^\s*#{2,}\s*\S', p['prompt'], re.M):
+            heads += 1
+        r = [rank[x[1]] for x in rows]
+        mono += all(b >= a for a, b in zip(r, r[1:]))
+    return OUTRO_HEAD.format(
+        heads=heads, secs=secs, mono=mono, order=order,
+        per='%.1f' % (secs / float(len(PROMPTS))))
 
 
 def build():
@@ -347,7 +448,7 @@ def build():
            '&ldquo;this must not be A, B, C or D&rdquo;, while the rule here also catches '
            'prompts 6, 10, 12, 17 and 58, which forbid a shortcut in passing rather than '
            'in a list.</p>',
-           OUTRO_HEAD]
+           outro()]
     for n, p in enumerate(PROMPTS, 1):
         out.append(card(n, p))
     out.append(END)
@@ -356,15 +457,21 @@ def build():
 
 def check():
     """The two guarantees. Run as `python build_deltas.py --check`."""
+    secs = 0
     for n, p in enumerate(PROMPTS, 1):
-        rows = label_segments(p['prompt'])
-        assert ''.join(c for c, _r, _i, _x in rows) == p['prompt'], \
+        rows = label_sections(p['prompt'])
+        secs += len(rows)
+        assert ''.join(c for c, _r, _x in rows) == p['prompt'], \
             'prompt %d does not reconstruct' % n
-        shown = ({r for _c, r, inh, _x in rows if not inh} |
-                 {x for _c, _r, _i, xs in rows for x in xs})
-        assert shown == roles_of(p['prompt']), \
-            'prompt %d: gutter %s but strip %s' % (n, sorted(shown), sorted(roles_of(p['prompt'])))
-    print('all 63 reconstruct byte-for-byte; gutter matches strip everywhere')
+        # The gutter says which part dominates each section; the strip says which
+        # parts are present anywhere. A part can be present and dominate nothing,
+        # so the gutter is a subset of the strip, never a superset.
+        shown = {r for _c, r, _x in rows} | {x for _c, _r, xs in rows for x in xs}
+        assert shown <= roles_of(p['prompt']), \
+            'prompt %d: gutter %s outside strip %s' % (
+                n, sorted(shown - roles_of(p['prompt'])), sorted(roles_of(p['prompt'])))
+    print('all 63 reconstruct byte-for-byte; every gutter letter is in its strip')
+    print('%d sections over 63 prompts, %.1f per prompt' % (secs, secs / 63.0))
 
 
 if __name__ == '__main__':

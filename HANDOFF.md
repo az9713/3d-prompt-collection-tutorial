@@ -14,7 +14,7 @@ Run `git log -1 --oneline` for the current commit. Everything below is pushed.
 
 Three files exist here that do not exist upstream:
 
-- **`prompt-templates.html`** — about 637 KB, the deliverable. A meta-pattern analysis of
+- **`prompt-templates.html`** — about 537 KB, the deliverable. A meta-pattern analysis of
   the 63 prompts in six tabs: the pattern, the 63 deltas, the six families (sub-tabs A–F),
   blocks and word bank, write one, the source. Single file, no dependencies, dark mode.
   Deep links work: any anchor activates the tab and sub-tab holding it, opens the
@@ -44,7 +44,7 @@ None outstanding. Loose ends, if anyone wants them:
 2. A hand-written one-line "what makes this one different" per prompt, on top of the
    mechanical delta header. Offered and not taken; it is 63 lines of editorial.
 
-The page is 637 KB because all 63 prompt texts are embedded. That was deliberate and is
+The page is 537 KB because all 63 prompt texts are embedded. That was deliberate and is
 not a problem to fix: it keeps the file working from disk with no dependency on Peter's
 repo.
 
@@ -71,20 +71,43 @@ Both tabs and the README say so. Do not "fix" either number to match the other.
 
 ## How the annotation works, and its two guarantees
 
-Every block of prompt text in the delta tab carries a letter saying which of the eight
-parts it serves. A block takes the first part its own wording matches, in the priority
-order d, b, h, e, g, c, f, so one block shows one letter. A block matching nothing
-inherits the part above it and is drawn hollow. Counts: 935 direct, 433 inherited,
-2 second letters.
+Rewritten 2026-09-04. It used to label every sentence and produced 1,368 blocks, median 18
+per prompt, 496 of them under 120 characters. One-line letters taught nothing. It now
+labels **sections**, cut where Peter cut them: at a markdown heading (51 of 63 prompts
+have them) and at a blank line elsewhere. That gives **436 sections, 6.9 per prompt**,
+median 558 characters, only 24 under 120. Hollow letters are gone.
+
+How a section gets its letter, in order:
+
+1. Its heading decides, if the heading matches `HEAD_RULES` **and** that part is already in
+   the prompt's strip. A heading never introduces a part `roles_of` did not find.
+2. Otherwise the part owning the most characters wins, counting sentence matches with `f`
+   halved (`F_WEIGHT`), because `f`'s keyword list is the loosest and it otherwise takes
+   sections that plainly belong elsewhere.
+3. `d` is dropped from that tally unless the section carries boilerplate wording itself
+   (`D_STRICT`). The bare word "procedural" is ordinary vocabulary here.
+4. A section matching nothing continues the part above it. Neighbours with the same single
+   letter merge.
+5. The opening section is `a` by definition; what else it carries becomes its second letter,
+   `b` first.
+
+A second, quieter letter marks a section doing two jobs: the part holds a quarter of the
+section (`SECOND`), or it is `b`. `b` is exempt from the share test because the negative
+list is two or three sentences inside a longer opening paragraph and never wins on length,
+yet it is one of the moves most worth seeing. It shows in all 31 prompts that have it.
+
+Watch `HEAD_RULES` for substrings. `spec` used to match "THE ZOOM IS THE **SPEC**TACLE" and
+labelled a whole section `d`; it is now `specification`.
 
 Two assertions run at build time and must keep passing:
 
-1. Every prompt reconstructs byte-for-byte from its annotated blocks. The annotation never
-   reorders or edits the source text.
-2. The set of parts in the gutter equals the set in the eight-cell strip, for all 63.
-   A part can be present in a prompt yet lose every segment to a higher-priority part; a
-   second pass reassigns it, and where even that would erase the part already there, the
-   block carries a second smaller letter. That case occurs exactly twice.
+1. Every prompt reconstructs byte-for-byte from its annotated sections. The annotation
+   never reorders or edits the source text.
+2. Every letter in the gutter is in the eight-cell strip, for all 63. **Subset, not
+   equality** — that changed with the rewrite. The strip asks whether a part appears
+   anywhere; the gutter asks which part dominates a section. A part can be present and
+   dominate nothing, so it can be in the strip and not on the page. The reverse is the
+   error the assertion catches. Do not "fix" this back to equality.
 
 Check both after any change to the segmenter:
 

@@ -56,12 +56,23 @@ second tab shows both for every prompt, and every figure in it is measured from
 
 Each prompt gets a strip of eight cells showing which spine parts it actually contains and
 which it does without, the reusable blocks it carries, and its full text with any wording
-that also appears in another prompt dimmed out. The text is annotated: every block carries
-a letter from a to h in the left margin naming the part it serves, so you can read the
-pattern down the page against the wording that fills it. A hollow letter means the block
-inherited its part from the header above rather than matching on its own wording. Nothing
-is reordered - the text runs exactly as it does in `prompts.json`. A 63-row matrix
-summarises all of it at once.
+that also appears in another prompt dimmed out. The text is annotated: it is cut into
+sections at Peter's own markdown headings, which 51 of the 63 prompts use, and at a blank
+line everywhere else, and each section is headed with the part from a to h that it is
+doing. That is 436 sections across the collection, about seven per prompt, so the shape of
+a prompt can be read down the page against the wording that fills it. A heading names its
+own section's part where it can - *Performance discipline* is part h - and otherwise the
+part owning the most characters wins. A second, quieter letter marks a section doing two
+jobs at once. Nothing is reordered - the text runs exactly as it does in `prompts.json`.
+A 63-row matrix summarises all of it at once.
+
+The strip and the section headings answer different questions and will not always agree.
+The strip asks whether a part appears anywhere in the prompt; the headings ask which part
+dominates a section. A part can be present and dominate nothing, so it can sit in the
+strip and never appear down the page; the reverse never happens, and a build assertion
+enforces that. Related: the spine is ordered on average, but only 19 of the 63 prompts run
+from a to h without doubling back. Peter returns to detail after controls, and puts life
+back in after performance.
 
 Two things fall out of that. Parts **a** and **g** are in all 63 - every prompt names its
 subject and tells the viewer what the controls do - while the negative list, part **b**, is
